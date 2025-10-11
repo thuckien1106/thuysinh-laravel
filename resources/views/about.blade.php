@@ -17,7 +17,7 @@
       <a href="{{ route('contact') }}" class="btn btn-ocean mt-3">Liên hệ ngay</a>
     </div>
     <div class="col-md-6 text-center">
-      <img src="{{ asset('assets/img/logo.jpg') }}" alt="AquaShop" class="img-fluid rounded-3 shadow">
+      <img src="{{ asset('assets/img/logo.png') }}" alt="AquaShop" class="img-fluid rounded-3 shadow">
     </div>
   </div>
 </section>

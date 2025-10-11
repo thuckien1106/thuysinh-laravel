@@ -6,6 +6,10 @@ use App\Http\Controllers\{
     OrderController, AuthController, AdminController
 };
 
+// =========================
+// 🏠 TRANG NGƯỜI DÙNG
+// =========================
+
 // Trang chính
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -18,12 +22,33 @@ Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.s
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
 
-// Tài khoản
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/register', [AuthController::class, 'register'])->name('register');
 
-// Quản trị
-Route::prefix('admin')->group(function () {
+// =========================
+// 🔐 ĐĂNG NHẬP / ĐĂNG XUẤT
+// =========================
+
+// Hiển thị form đăng nhập (route chính)
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+
+// Alias phụ cho form đăng ký dùng
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login.form');
+
+// Gửi form đăng nhập (POST)
+Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+
+// Đăng xuất
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Đăng ký
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
+
+
+// =========================
+// 🧑‍💼 KHU VỰC QUẢN TRỊ
+// =========================
+// -> Chỉ vào được nếu đã đăng nhập (middleware 'auth' tự định nghĩa)
+Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
     Route::get('/customers', [AdminController::class, 'customers'])->name('admin.customers');
