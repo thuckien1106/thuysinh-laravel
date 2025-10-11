@@ -1,0 +1,21 @@
+:root {
+  --ocean: #2388cb;
+}
+.navbar.bg-ocean {
+  background: linear-gradient(90deg, #1b6ea7, #2388cb);
+}
+.stat-card {
+  border: 1px solid #e7f1fb;
+  border-radius: 14px;
+}
+.stat-title {
+  font-size: 0.9rem;
+  color: #567;
+}
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.table-ocean tr th {
+  background: #eaf3fb;
+}
