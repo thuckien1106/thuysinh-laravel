@@ -7,7 +7,7 @@
     <div class="col-md-6">
       <h2 class="fw-bold text-primary mb-3">Về AquaShop</h2>
       <p class="text-secondary">
-        AquaShop được thành lập với sứ mệnh mang đến những sản phẩm thủy sinh chất lượng, 
+        AquaShop được thành lập với sứ mệnh mang đến những sản phẩm thủy sinh chất lượng,
         giúp bạn tạo dựng một không gian sống xanh, thư giãn và gần gũi với thiên nhiên.
       </p>
       <p class="text-secondary">
@@ -24,3 +24,4 @@
 
 @include('layouts.footer')
 @endsection
+

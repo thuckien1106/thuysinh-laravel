@@ -1,21 +1,64 @@
-:root {
-  --ocean: #2388cb;
+/* =====================
+   AquaShop Admin Theme
+   Clean, airy, accessible
+   ===================== */
+
+:root{
+  --admin-bg:#0e1525;           /* deep navy */
+  --admin-panel:#121c30;        /* panel bg */
+  --admin-sidebar:#0f1a2c;      /* sidebar */
+  --admin-card:#12213a;         /* card bg */
+  --admin-border:#203049;       /* borders */
+  --admin-text:#e5eefc;         /* main text */
+  --admin-muted:#a9bbd9;        /* muted */
+  --admin-primary:#3aa0ff;      /* primary */
+  --admin-accent:#7cf2ff;       /* accent */
+  --admin-danger:#ff6b6b;
+  --admin-success:#33d9a6;
+  --shadow:0 10px 30px rgba(0,0,0,.25);
 }
-.navbar.bg-ocean {
-  background: linear-gradient(90deg, #1b6ea7, #2388cb);
-}
-.stat-card {
-  border: 1px solid #e7f1fb;
-  border-radius: 14px;
-}
-.stat-title {
-  font-size: 0.9rem;
-  color: #567;
-}
-.stat-value {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-.table-ocean tr th {
-  background: #eaf3fb;
+
+/* Base */
+body.admin-body{background:linear-gradient(180deg, var(--admin-bg), #0a1220);color:var(--admin-text);font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";}
+.admin-topbar{height:60px;background:rgba(16,28,48,.9);backdrop-filter:blur(8px);color:var(--admin-text);border-bottom:1px solid var(--admin-border);position:sticky;top:0;z-index:1000}
+.admin-wrapper{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 60px)}
+
+/* Sidebar */
+.admin-sidebar{background:linear-gradient(180deg,var(--admin-sidebar), #0c1424 80%);border-right:1px solid var(--admin-border);padding:16px 12px}
+.admin-sidebar .nav-link{color:var(--admin-muted);border-radius:10px;padding:.65rem .8rem;display:flex;align-items:center;gap:.5rem}
+.admin-sidebar .nav-link.active,.admin-sidebar .nav-link:hover{background:rgba(58,160,255,.12);color:#fff}
+.admin-sidebar .nav-link .bi{color:var(--admin-accent)}
+
+/* Content */
+.admin-content{padding:24px}
+.admin-content .card{background:linear-gradient(180deg, rgba(18,33,58,.96), rgba(16,28,48,.96));border:1px solid var(--admin-border);color:var(--admin-text);border-radius:14px;box-shadow:var(--shadow)}
+.admin-content .table{color:var(--admin-text)}
+.admin-content .table td,.admin-content .table th{border-color:var(--admin-border)}
+
+/* Header bar on pages */
+.admin-headerbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.admin-headerbar h3{margin:0;font-weight:700}
+.search-input{max-width:340px;border-radius:12px;background:#0e1a2e;border:1px solid var(--admin-border);color:var(--admin-text)}
+.search-input::placeholder{color:var(--admin-muted)}
+
+/* Stat cards */
+.stat-card{border:1px solid var(--admin-border);background:linear-gradient(180deg,#132542,#0e1c34);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.stat-card .label{color:var(--admin-muted);font-size:.9rem}
+.stat-card .value{font-size:1.8rem;font-weight:800}
+.stat-card .icon{font-size:26px;color:var(--admin-accent)}
+
+/* Buttons */
+.btn-ocean{background:linear-gradient(90deg,#1167d8,#3aa0ff);border:0;color:#fff;border-radius:10px}
+.btn-ocean:hover{filter:brightness(1.08)}
+.btn-outline-ocean{border:1px solid var(--admin-primary);color:var(--admin-primary);border-radius:10px}
+
+/* Badges */
+.badge-soft{background:rgba(58,160,255,.12);color:var(--admin-accent);border:1px solid var(--admin-border)}
+.badge-danger-soft{background:rgba(255,107,107,.12);color:#ffaaaa;border:1px solid var(--admin-border)}
+
+/* Responsive */
+@media (max-width: 992px){
+  .admin-wrapper{grid-template-columns:1fr}
+  .admin-sidebar{position:sticky;top:60px;z-index:900;display:flex;overflow:auto;padding:8px}
+  .admin-sidebar .nav{flex-direction:row;gap:6px}
 }

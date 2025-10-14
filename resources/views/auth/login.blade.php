@@ -8,21 +8,6 @@
     <p class="text-muted">Chào mừng bạn quay lại với <strong>AquaShop</strong></p>
   </div>
 
-  {{-- Thông báo thành công --}}
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  @endif
-
-  {{-- Thông báo lỗi --}}
-  @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ $errors->first() }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  @endif
 
   <form method="POST" action="{{ route('login.process') }}">
     @csrf
@@ -40,7 +25,7 @@
         <input class="form-check-input" type="checkbox" id="rememberMe">
         <label class="form-check-label small text-muted" for="rememberMe">Ghi nhớ đăng nhập</label>
       </div>
-      <a href="#" class="text-decoration-none small text-primary">Quên mật khẩu?</a>
+      <a href="{{ route('password.forgot') }}" class="text-decoration-none small text-primary">Quên mật khẩu?</a>
     </div>
 
     <button class="btn btn-primary w-100 py-2 fw-semibold">

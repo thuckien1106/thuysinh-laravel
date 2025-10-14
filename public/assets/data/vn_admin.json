@@ -1,0 +1,50 @@
+{
+  "provinces": [
+    {
+      "code": "79",
+      "name": "TP Hồ Chí Minh",
+      "districts": [
+        {
+          "code": "760",
+          "name": "Quận 1",
+          "wards": [
+            {"code": "26734", "name": "Phường Bến Nghé"},
+            {"code": "26731", "name": "Phường Bến Thành"},
+            {"code": "26737", "name": "Phường Nguyễn Thái Bình"}
+          ]
+        },
+        {
+          "code": "769",
+          "name": "Quận 7",
+          "wards": [
+            {"code": "27463", "name": "Phường Tân Phú"},
+            {"code": "27466", "name": "Phường Tân Quy"}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "01",
+      "name": "Hà Nội",
+      "districts": [
+        {
+          "code": "001",
+          "name": "Quận Ba Đình",
+          "wards": [
+            {"code": "00001", "name": "Phường Phúc Xá"},
+            {"code": "00004", "name": "Phường Trúc Bạch"}
+          ]
+        },
+        {
+          "code": "002",
+          "name": "Quận Hoàn Kiếm",
+          "wards": [
+            {"code": "00006", "name": "Phường Phan Chu Trinh"},
+            {"code": "00007", "name": "Phường Hàng Bài"}
+          ]
+        }
+      ]
+    }
+  ]
+}
+
