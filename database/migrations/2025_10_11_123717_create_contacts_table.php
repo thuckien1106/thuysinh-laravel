@@ -15,7 +15,10 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('name', 120);
+            $table->string('email', 120)->nullable();
+            $table->text('message')->nullable();
+            $table->dateTime('created_at')->useCurrent();
         });
     }
 

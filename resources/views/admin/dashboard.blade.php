@@ -55,15 +55,37 @@
   <div class="col-md-3"><div class="stat-card"><div class="label">Hoàn thành</div><div class="value mt-1">{{ number_format($stats['completed']) }}</div></div></div>
 </div>
 
-<div class="card p-3">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0">Doanh thu 7 ngày gần đây</h5>
-  </div>
-  <canvas id="rev7" height="90"></canvas>
-</div>
-
-<div class="row g-3 mt-3">
+<div class="row g-3">
   <div class="col-lg-6">
+    <div class="card p-3 mb-3">
+      <h5 class="mb-0">Doanh thu 7 ngày gần đây</h5>
+      <canvas id="rev7" height="120"></canvas>
+    </div>
+    <div class="card p-3 mb-3">
+      <h5 class="mb-2">Doanh thu theo danh mục</h5>
+      <canvas id="cateSales" height="120"></canvas>
+    </div>
+    <div class="card p-3">
+      <h5 class="mb-3">Top sản phẩm bán chạy</h5>
+      <div class="table-responsive"><table class="table table-sm align-middle">
+        <thead><tr><th>Sản phẩm</th><th class="text-center">SL</th><th class="text-end">Doanh thu</th></tr></thead>
+        <tbody>
+          @foreach($topProducts as $tp)
+            <tr>
+              <td>{{ $tp->name }}</td>
+              <td class="text-center">{{ $tp->qty }}</td>
+              <td class="text-end">{{ number_format($tp->amount,0,',','.') }} đ</td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card p-3 mb-3">
+      <h5 class="mb-2">Cơ cấu trạng thái đơn hàng</h5>
+      <canvas id="orderStatus" height="120"></canvas>
+    </div>
     <div class="card p-3">
       <h5 class="mb-3">Đơn gần đây</h5>
       <div class="table-responsive"><table class="table table-sm align-middle">
@@ -82,24 +104,7 @@
       </table></div>
     </div>
   </div>
-  <div class="col-lg-6">
-    <div class="card p-3">
-      <h5 class="mb-3">Top sản phẩm bán chạy</h5>
-      <div class="table-responsive"><table class="table table-sm align-middle">
-        <thead><tr><th>Sản phẩm</th><th class="text-center">SL</th><th class="text-end">Doanh thu</th></tr></thead>
-        <tbody>
-          @foreach($topProducts as $tp)
-            <tr>
-              <td>{{ $tp->name }}</td>
-              <td class="text-center">{{ $tp->qty }}</td>
-              <td class="text-end">{{ number_format($tp->amount,0,',','.') }} đ</td>
-            </tr>
-          @endforeach
-        </tbody>
-      </table></div>
-    </div>
-  </div>
- </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
@@ -110,6 +115,26 @@
     data:{
       labels,
       datasets:[{label:'Doanh thu (đ)', data:dataVals, borderColor:'#2ca8ff', backgroundColor:'rgba(44,168,255,.15)', tension:.25, fill:true}]
+    },
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
+
+  // Order status doughnut
+  new Chart(document.getElementById('orderStatus'),{
+    type:'doughnut',
+    data:{
+      labels:@json(array_values($statusLabels)),
+      datasets:[{data:@json(array_values($statusCounts)), backgroundColor:['#6c8ae4','#1ec8b2','#ffb020','#f55f77']}]
+    },
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  // Category sales bar
+  new Chart(document.getElementById('cateSales'),{
+    type:'bar',
+    data:{
+      labels:@json(collect($categorySales)->pluck('name')),
+      datasets:[{label:'Doanh thu (đ)', data:@json(collect($categorySales)->pluck('amount')), backgroundColor:'rgba(44,168,255,.3)', borderColor:'#2ca8ff'}]
     },
     options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
   });

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     protected $fillable = [
+        'name',
         'username',
         'email',
         'password',
@@ -18,4 +19,9 @@ class User extends Authenticatable
     ];
 
     public $timestamps = false; 
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

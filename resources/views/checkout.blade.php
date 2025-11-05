@@ -4,6 +4,19 @@
 
 <section class="bg-white p-5 rounded-4 shadow-sm">
   <h2 class="fw-bold text-primary mb-4">Thanh toán đơn hàng</h2>
+  @if(session('saved_coupon'))
+    @php $sc = strtoupper(session('saved_coupon')['code'] ?? ''); @endphp
+    <div class="alert alert-ocean alert-success d-flex justify-content-between align-items-center">
+      <div>
+        Bạn đã lưu mã <strong>{{ $sc }}</strong>. Bấm “Áp dụng” để trừ giảm giá vào đơn hàng.
+      </div>
+      <form method="POST" action="{{ route('cart.coupon') }}" class="m-0">
+        @csrf
+        <input type="hidden" name="code" value="{{ $sc }}">
+        <button class="btn btn-ocean btn-sm">Áp dụng</button>
+      </form>
+    </div>
+  @endif
   @if($errors->any())
     <div class="alert alert-danger">{{ $errors->first() }}</div>
   @endif
@@ -45,6 +58,23 @@
           <label class="form-check-label" for="pm_online">Thanh toán trực tuyến (demo)</label>
         </div>
         <div class="form-text">Demo: chọn Trực tuyến sẽ tự đánh dấu đã thanh toán.</div>
+      </div>
+
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-percent me-2"></i>Áp dụng mã giảm giá</h6>
+            <form method="POST" action="{{ route('cart.coupon') }}" class="row g-2 align-items-center">
+              @csrf
+              <div class="col-md-6">
+                <input type="text" name="code" class="form-control" placeholder="Nhập mã (ví dụ: datcutelove)" value="{{ strtoupper(session('saved_coupon')['code'] ?? '') }}">
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-outline-ocean w-100">Áp dụng</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="col-12 text-end mt-4">
         <button class="btn btn-ocean px-5">Xác nhận đặt hàng</button>

@@ -49,7 +49,37 @@ class AdminController extends Controller
         $productMap = DB::table('products')->whereIn('id', $topProducts->pluck('product_id'))->pluck('name','id');
         foreach ($topProducts as $tp) { $tp->name = $productMap[$tp->product_id] ?? ('#'.$tp->product_id); }
 
-        return view('admin.dashboard', compact('stats','chart','recentOrders','topProducts'));
+        // Status distribution (canonical codes)
+        $statusLabels = [
+            'processing' => 'Đang xử lý',
+            'shipping' => 'Đang giao',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+        $statusCounts = [];
+        foreach (array_keys($statusLabels) as $code) {
+            $statusCounts[$code] = DB::table('orders')->where('status', $code)->count();
+        }
+
+        // Sales by category (amount)
+        $categorySales = DB::table('order_details as od')
+            ->join('products as p','p.id','=','od.product_id')
+            ->leftJoin('categories as c','c.id','=','p.category_id')
+            ->select(DB::raw('COALESCE(c.name, "Khác") as name'), DB::raw('SUM(od.price*od.quantity) as amount'))
+            ->groupBy('name')
+            ->orderByDesc(DB::raw('SUM(od.price*od.quantity)'))
+            ->limit(6)
+            ->get();
+
+        // Active discounts for quick display
+        $activeDiscounts = DB::table('product_discounts')
+            ->where('start_at','<=', now())
+            ->where('end_at','>=', now())
+            ->get()
+            ->keyBy('product_id')
+            ->map(fn($d)=>['percent'=>$d->percent,'end_at'=>$d->end_at]);
+
+        return view('admin.dashboard', compact('stats','chart','recentOrders','topProducts','statusLabels','statusCounts','categorySales','activeDiscounts'));
     }
 
     public function products()

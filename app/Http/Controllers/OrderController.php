@@ -19,6 +19,15 @@ class OrderController extends Controller
         foreach ($cart as $item) {
             $total += $item['price'] * $item['quantity'];
         }
+        // Áp dụng mã giảm giá (nếu có) vào tổng đơn
+        $coupon = session('coupon');
+        if ($coupon) {
+            if (($coupon['type'] ?? '') === 'percent') {
+                $total = max(0, $total - round($total * (($coupon['value'] ?? 0) / 100)));
+            } elseif (($coupon['type'] ?? '') === 'fixed') {
+                $total = max(0, $total - (int)($coupon['value'] ?? 0));
+            }
+        }
 
         // Resolve linked customer_id for logged-in user (if exists)
         $customerId = null;
@@ -57,9 +66,14 @@ class OrderController extends Controller
                     $prefill->ward     = $addr->ward;
                 }
             }
-            // Chưa có thông tin tài khoản/địa chỉ mặc định → chuyển sang trang tài khoản
-            if (!$prefill || empty($prefill->full_name) || !$addr || empty($addr->address_line)) {
-                return redirect()->route('account.profile')
+            // Chưa có thông tin tài khoản/địa chỉ mặc định đầy đủ → chuyển sang trang tài khoản
+            $needProfile = false;
+            if (!$prefill) { $needProfile = true; }
+            if (!$addr) { $needProfile = true; }
+            if ($prefill && (empty($prefill->full_name) || empty($prefill->phone))) { $needProfile = true; }
+            if ($addr && (empty($addr->address_line) || empty($addr->province) || empty($addr->district) || empty($addr->ward))) { $needProfile = true; }
+            if ($needProfile) {
+                return redirect()->route('account.profile', ['from' => 'checkout'])
                     ->with('warning', 'Vui lòng nhập thông tin tài khoản và địa chỉ nhận hàng trước khi thanh toán.');
             }
         }
@@ -92,6 +106,21 @@ class OrderController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
 
+        // Trước khi tạo đơn, kiểm tra hồ sơ người dùng đã đầy đủ chưa
+        if (session('admin')) {
+            $custCheck = DB::table('customers')->where('email', session('admin')->email)->first();
+            $addrCheck = null;
+            if ($custCheck) {
+                $addrCheck = DB::table('addresses')->where('customer_id',$custCheck->id)->where('is_default',1)->first();
+            }
+            $missingProfile = (!$custCheck || !$addrCheck || empty($custCheck->full_name) || empty($custCheck->phone)
+                || empty($addrCheck->address_line) || empty($addrCheck->province) || empty($addrCheck->district) || empty($addrCheck->ward));
+            if ($missingProfile) {
+                return redirect()->route('account.profile', ['from'=>'checkout'])
+                    ->with('warning','Vui lòng hoàn thiện thông tin tài khoản và địa chỉ trước khi đặt hàng.');
+            }
+        }
+
         $order = Order::create([
             'user_id' => optional(session('admin'))->id,
             'total' => $total,
@@ -117,22 +146,7 @@ class OrderController extends Controller
             Order::where('id', $order->id)->update(['customer_id' => $customerId]);
         }
 
-        // If logged in and customer record exists, store/update default address for that customer
-        if ($customerId) {
-            Address::create([
-                'customer_id' => $customerId,
-                'full_name' => $data['customer_name'],
-                'phone' => $data['customer_phone'] ?? null,
-                'address_line' => $data['customer_address'],
-                'is_default' => 1,
-            ]);
-            // Also sync key fields to customers table
-            DB::table('customers')->where('id',$customerId)->update([
-                'full_name' => $data['customer_name'],
-                'phone' => $data['customer_phone'] ?? null,
-                'address' => $data['customer_address'],
-            ]);
-        }
+        // Không tạo/ghi đè địa chỉ mặc định tại bước đặt hàng để tránh lách ràng buộc
 
         // Create payment record (pending for COD)
         Payment::create([
@@ -149,7 +163,7 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
-        // Clear cart and coupon
+        // Clear cart and coupon (đã dùng)
         session()->forget('cart');
         session()->forget('coupon');
 
@@ -189,7 +203,7 @@ class OrderController extends Controller
         $statusParam = $request->query('status');
         $code = Order::normalizeStatus($statusParam);
         $query = Order::where('user_id', $user->id);
-        if (in_array($code, ['completed','cancelled','shipping'])) {
+        if (in_array($code, ['completed','cancelled','shipping','processing'])) {
             $query->where('status', $code);
         }
         $orders = $query->orderByDesc('id')->limit(50)->get();
@@ -217,5 +231,29 @@ class OrderController extends Controller
         // Update shipment
         Shipment::where('order_id',$order->id)->update(['status'=>'cancelled']);
         return back()->with('success','Đã hủy đơn hàng.');
+    }
+
+    public function received($id)
+    {
+        $user = session('admin');
+        if (!$user) return redirect()->route('login');
+        $order = Order::findOrFail($id);
+        if ($order->user_id !== $user->id) return redirect()->route('orders.mine')->with('error','Bạn không thể xác nhận đơn này.');
+        $statusCode = Order::normalizeStatus($order->getRawOriginal('status') ?? $order->status);
+        if (in_array($statusCode, ['completed','cancelled'])) {
+            return back()->with('warning','Trạng thái đơn không hợp lệ để xác nhận.');
+        }
+        // Mark order as completed
+        $order->update(['status' => 'completed']);
+        // Update shipment/payment if tồn tại
+        Shipment::updateOrCreate(
+            ['order_id' => $order->id],
+            ['status' => 'delivered', 'delivered_at' => now(), 'carrier' => 'local']
+        );
+        Payment::updateOrCreate(
+            ['order_id' => $order->id],
+            ['status' => 'paid', 'paid_at' => now(), 'method' => 'cod', 'amount' => $order->total]
+        );
+        return redirect()->route('order.thankyou', $order->id)->with('success','Bạn đã xác nhận đã nhận hàng. Hãy đánh giá sản phẩm trong đơn!');
     }
 }

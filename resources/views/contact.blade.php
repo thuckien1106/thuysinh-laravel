@@ -29,8 +29,27 @@
         <button class="btn btn-ocean w-100">Gửi tin nhắn</button>
       </form>
     </div>
-    <div class="col-md-6 text-center mt-4 mt-md-0">
-      <img src="{{ asset('assets/img/contact_us.webp') }}" alt="Liên hệ AquaShop" class="img-fluid rounded-3 shadow">
+    <div class="col-md-6 mt-4 mt-md-0">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Thông tin sinh viên thực hiện</h5>
+          <ul class="list-unstyled mb-3">
+            <li class="mb-1"><i class="bi bi-person-badge me-2 text-primary"></i>Lê Nguyễn Tuấn Đạt</li>
+            <li class="mb-1"><i class="bi bi-person-badge me-2 text-primary"></i>Hồ Kiến Thức</li>
+            <li class="mb-1"><i class="bi bi-person-badge me-2 text-primary"></i>Trần Hữu Thịnh</li>
+          </ul>
+          <div class="mb-2"><i class="bi bi-telephone me-2 text-success"></i><strong>Điện thoại:</strong> 0332643954</div>
+          <div><i class="bi bi-envelope me-2 text-danger"></i><strong>Email:</strong> <a href="mailto:datle5721@gmail.com">datle5721@gmail.com</a></div>
+        </div>
+      </div>
+      @php 
+        $img = 'assets/img/contact_us.webp';
+        $fallback = 'assets/img/hero_fish.jpg';
+        $src = file_exists(public_path($img)) ? asset($img).'?v='.filemtime(public_path($img)) : asset($fallback);
+      @endphp
+      <div class="text-center">
+        <img src="{{ $src }}" alt="Liên hệ AquaShop" class="img-fluid rounded-3 shadow">
+      </div>
     </div>
   </div>
 </section>

@@ -44,6 +44,10 @@ class ProductAdminController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:120',
             'description' => 'nullable|string',
+            'short_description' => 'nullable|string|max:255',
+            'long_description' => 'nullable|string',
+            'specs' => 'nullable|string',
+            'care_guide' => 'nullable|string',
             // MySQL DECIMAL(10,2) => tối đa 99,999,999.99
             'price' => 'required|numeric|min:0|max:99999999.99',
             'quantity' => 'required|integer|min:0',
@@ -81,6 +85,10 @@ class ProductAdminController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:120',
             'description' => 'nullable|string',
+            'short_description' => 'nullable|string|max:255',
+            'long_description' => 'nullable|string',
+            'specs' => 'nullable|string',
+            'care_guide' => 'nullable|string',
             'price' => 'required|numeric|min:0|max:99999999.99',
             'quantity' => 'required|integer|min:0',
             'image' => 'nullable|string|max:255',
@@ -106,5 +114,31 @@ class ProductAdminController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Đã xóa sản phẩm.');
+    }
+
+    // Tạo lịch giảm giá nhanh cho sản phẩm
+    public function setDiscount(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $data = $request->validate([
+            'percent' => 'required|integer|min:1|max:90',
+            'duration' => 'required|integer|min:1|max:168', // tối đa 7 ngày tính theo giờ
+            'unit' => 'required|in:hours,days',
+            'note' => 'nullable|string|max:120',
+        ]);
+
+        $hours = $data['unit'] === 'days' ? ($data['duration'] * 24) : $data['duration'];
+        $start = now();
+        $end = now()->addHours($hours);
+
+        \App\Models\ProductDiscount::create([
+            'product_id' => $product->id,
+            'percent' => $data['percent'],
+            'start_at' => $start,
+            'end_at' => $end,
+            'note' => $data['note'] ?? null,
+        ]);
+
+        return back()->with('success', 'Đã thiết lập giảm giá '.$data['percent'].'% cho sản phẩm trong '.($data['unit']==='days'?$data['duration'].' ngày':$data['duration'].' giờ').'.');
     }
 }

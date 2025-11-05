@@ -11,5 +11,10 @@ class Shipment extends Model
     protected $fillable = [
         'order_id', 'carrier', 'tracking_code', 'status', 'shipped_at', 'delivered_at'
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
 

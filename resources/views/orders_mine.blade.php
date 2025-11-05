@@ -7,8 +7,9 @@
   @php $tab = \App\Models\Order::normalizeStatus($statusParam ?? null) ?: 'all'; @endphp
   <ul class="nav nav-tabs mb-3">
     <li class="nav-item"><a class="nav-link {{ $tab==='all' ? 'active' : '' }}" href="{{ route('orders.mine') }}">Tất cả</a></li>
+    <li class="nav-item"><a class="nav-link {{ $tab==='processing' ? 'active' : '' }}" href="{{ route('orders.mine', ['status'=>'processing']) }}">Đang xử lý</a></li>
     <li class="nav-item"><a class="nav-link {{ $tab==='shipping' ? 'active' : '' }}" href="{{ route('orders.mine', ['status'=>'shipping']) }}">Đang giao</a></li>
-    <li class="nav-item"><a class="nav-link {{ $tab==='completed' ? 'active' : '' }}" href="{{ route('orders.mine', ['status'=>'completed']) }}">Đã giao</a></li>
+    <li class="nav-item"><a class="nav-link {{ $tab==='completed' ? 'active' : '' }}" href="{{ route('orders.mine', ['status'=>'completed']) }}">Đã nhận hàng</a></li>
     <li class="nav-item"><a class="nav-link {{ $tab==='cancelled' ? 'active' : '' }}" href="{{ route('orders.mine', ['status'=>'cancelled']) }}">Đã hủy</a></li>
   </ul>
   <div class="table-responsive">
@@ -30,7 +31,7 @@
             $p = optional($payments->get($o->id))->last();
             $s = optional($shipments->get($o->id))->last();
             $payStatusMap = ['pending'=>'Chờ xử lý','paid'=>'Đã thanh toán','failed'=>'Thất bại'];
-            $shipStatusMap = ['pending'=>'Chờ giao','shipping'=>'Đang giao','delivered'=>'Đã giao','cancelled'=>'Đã hủy'];
+            $shipStatusMap = ['pending'=>'Chờ giao','shipping'=>'Đang giao','delivered'=>'Đã nhận hàng','cancelled'=>'Đã hủy'];
             $statusCode = \App\Models\Order::normalizeStatus($o->getRawOriginal('status') ?? $o->status);
           @endphp
           <tr>
@@ -46,6 +47,12 @@
                 <form method="POST" action="{{ route('orders.cancel',$o->id) }}" class="d-inline" onsubmit="return confirm('Hủy đơn #{{ $o->id }}?')">
                   @csrf
                   <button class="btn btn-sm btn-outline-danger">Hủy</button>
+                </form>
+              @endif
+              @if($statusCode==='shipping')
+                <form method="POST" action="{{ route('orders.received',$o->id) }}" class="d-inline" onsubmit="return confirm('Xác nhận đã nhận hàng cho đơn #{{ $o->id }}?')">
+                  @csrf
+                  <button class="btn btn-sm btn-ocean">Đã nhận hàng</button>
                 </form>
               @endif
             </td>

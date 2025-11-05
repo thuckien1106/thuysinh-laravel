@@ -58,5 +58,31 @@ class Order extends Model
         $k = strtolower($value);
         return $reverse[$k] ?? $value; // fallback to raw value
     }
+
+    // Relationships
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function details()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'order_id');
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'order_id');
+    }
 }
 

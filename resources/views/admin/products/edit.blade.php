@@ -51,6 +51,22 @@
     <label class="form-label">Mô tả</label>
     <textarea class="form-control" name="description" rows="5">{{ $product->description }}</textarea>
   </div>
+  <div class="col-12">
+    <label class="form-label">Mô tả ngắn (SEO)</label>
+    <input class="form-control" name="short_description" value="{{ $product->short_description }}" placeholder="Tóm tắt 1-2 câu (<=255 ký tự)">
+  </div>
+  <div class="col-12">
+    <label class="form-label">Chi tiết dài</label>
+    <textarea class="form-control" name="long_description" rows="7">{{ $product->long_description }}</textarea>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Thông số kỹ thuật</label>
+    <textarea class="form-control" name="specs" rows="5">{{ $product->specs }}</textarea>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Hướng dẫn chăm sóc</label>
+    <textarea class="form-control" name="care_guide" rows="5">{{ $product->care_guide }}</textarea>
+  </div>
   <div class="col-12 text-end">
     <button class="btn btn-ocean">Cập nhật</button>
     <a class="btn btn-outline-secondary" href="{{ route('admin.products.index') }}">Hủy</a>

@@ -82,6 +82,7 @@ class AuthController extends Controller
         ]);
 
         $user = new User();
+        $user->name = $request->username; // đảm bảo cột name (migration mặc định) có giá trị
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);

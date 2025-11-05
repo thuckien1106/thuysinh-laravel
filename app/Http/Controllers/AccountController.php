@@ -27,17 +27,20 @@ class AccountController extends Controller
     public function saveProfile(Request $request)
     {
         $user = session('admin');
-        $data = $request->validate([
-            'full_name'    => 'nullable|string|max:120',
-            'phone'        => 'nullable|string|max:30',
+        $fromCheckout = $request->input('from') === 'checkout';
+        $rules = [
+            'full_name'    => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
+            'phone'        => ($fromCheckout ? 'required' : 'nullable').'|string|max:30',
             'email'        => 'required|email|max:120|unique:users,email,'.$user->id,
             'birthdate'    => 'nullable|date',
-            // Address fields are optional; if provided we'll store as default address
-            'address_line' => 'nullable|string|max:255',
-            'ward'         => 'nullable|string|max:120',
-            'district'     => 'nullable|string|max:120',
-            'province'     => 'nullable|string|max:120',
-        ]);
+            // Address fields
+            'address_line' => ($fromCheckout ? 'required' : 'nullable').'|string|max:255',
+            'ward'         => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
+            'district'     => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
+            'province'     => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
+            'from'         => 'nullable|in:checkout'
+        ];
+        $data = $request->validate($rules);
 
         // Lưu thông tin người dùng (nếu có cột)
         // Cập nhật email về bảng users để đồng bộ đăng nhập
@@ -108,6 +111,9 @@ class AccountController extends Controller
         $user = User::find($user->id);
         session(['admin'=>$user]);
 
+        if ($fromCheckout) {
+            return redirect()->route('checkout')->with('success','Đã lưu thông tin. Tiếp tục thanh toán.');
+        }
         return back()->with('success','Đã lưu thông tin tài khoản.');
     }
 

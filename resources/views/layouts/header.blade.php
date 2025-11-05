@@ -11,6 +11,23 @@
     /* Hide legacy text cart link in navbar; we show icon version instead */
     .navbar a.nav-link[href='{{ route('cart') }}']:not(#navCartLink){ display:none !important; }
     #navCartBadge{ line-height:1; }
+    /* Sale nav emphasis */
+    /* SALE link (sharp, non-blurry) */
+    .sale-hot{
+      color:#e11d48 !important; /* strong red */
+      font-weight:800;
+      text-shadow:none; /* avoid blur */
+      background:none;  /* remove gradient text to keep crisp */
+      -webkit-text-fill-color:unset;
+      animation:none;
+    }
+    .sale-hot .bi{color:#ffc107 !important; filter:none; text-shadow:none;}
+    .sale-hot:hover{ color:#be123c !important; }
+    /* Sale badge on product image */
+    .badge-sale{ background:linear-gradient(90deg,#ef4444,#f97316); color:#fff; border:none; box-shadow:0 6px 16px rgba(239,68,68,.25); }
+    /* Navbar search */
+    .nav-search{ width:260px; }
+    @media (max-width: 992px){ .nav-search{ width:100%; } }
   </style>
 </head>
 
@@ -27,6 +44,14 @@
 
     <div class="collapse navbar-collapse justify-content-end" id="menu">
       <ul class="navbar-nav align-items-center">
+        <li class="nav-item d-none d-lg-block me-2">
+          <form class="d-flex" action="{{ route('products.index') }}" method="GET" role="search">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input class="form-control nav-search" type="search" name="q" value="{{ request('q') }}" placeholder="Tìm sản phẩm...">
+            </div>
+          </form>
+        </li>
         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
         <li class="nav-item dropdown d-flex align-items-center">
           <a class="nav-link" href="{{ route('products.index') }}">Sản phẩm</a>
@@ -62,8 +87,10 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{{ route('products.index') }}">Tất cả sản phẩm</a></li>
+            <li><a class="dropdown-item text-danger" href="{{ route('products.sale') }}"><i class="bi bi-percent me-2"></i>Đang giảm giá</a></li>
           </ul>
         </li>
+        <li class="nav-item"><a class="nav-link sale-hot" href="{{ route('products.sale') }}"><i class="bi bi-fire me-1"></i>Sale</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">Giới thiệu</a></li>
         @if(!session('admin') || (session('admin')->role ?? 'user') === 'user')
           <li class="nav-item"><a class="nav-link" href="{{ route('cart') }}">Giỏ hàng</a></li>
@@ -77,6 +104,15 @@
         @endif
         <li class="nav-item">
           <button class="theme-toggle" id="themeToggle" title="Đổi giao diện" aria-label="Đổi giao diện"><i class="bi bi-moon-stars"></i></button>
+        </li>
+
+        <li class="nav-item d-lg-none w-100 mt-2">
+          <form class="d-flex" action="{{ route('products.index') }}" method="GET" role="search">
+            <div class="input-group w-100">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input class="form-control" type="search" name="q" value="{{ request('q') }}" placeholder="Tìm sản phẩm...">
+            </div>
+          </form>
         </li>
 
         @if(session('admin'))

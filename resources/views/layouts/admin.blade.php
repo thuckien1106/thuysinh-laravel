@@ -27,6 +27,9 @@
     <nav class="nav flex-column">
       <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Tổng quan</a>
       <a class="nav-link {{ request()->is('admin/products*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}"><i class="bi bi-box-seam me-2"></i>Sản phẩm</a>
+      <a class="nav-link {{ request()->is('admin/brands*') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}"><i class="bi bi-award me-2"></i>Thương hiệu</a>
+      <a class="nav-link {{ request()->is('admin/categories*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}"><i class="bi bi-grid-3x3-gap me-2"></i>Danh mục</a>
+      <a class="nav-link {{ request()->is('admin/discounts*') ? 'active' : '' }}" href="{{ route('admin.discounts.index') }}"><i class="bi bi-percent me-2"></i>Giảm giá</a>
       <a class="nav-link {{ request()->is('admin/orders*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}"><i class="bi bi-receipt me-2"></i>Đơn hàng</a>
       <a class="nav-link" href="{{ route('home') }}"><i class="bi bi-house me-2"></i>Về trang khách</a>
     </nav>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -35,7 +36,7 @@ class CartController extends Controller
         ]);
 
         $qty = $data['quantity'] ?? 1;
-        $product = Product::findOrFail($data['product_id']);
+        $product = Product::with('activeDiscount')->findOrFail($data['product_id']);
 
         $cart = session('cart', []);
         if (isset($cart[$product->id])) {
@@ -44,7 +45,7 @@ class CartController extends Controller
             $cart[$product->id] = [
                 'id' => $product->id,
                 'name' => $product->name,
-                'price' => (float) $product->price,
+                'price' => (float) $product->final_price,
                 'image' => $product->image,
                 'quantity' => $qty,
             ];
@@ -92,13 +93,36 @@ class CartController extends Controller
         $coupons = [
             'SALE10' => ['type' => 'percent', 'value' => 10],
             'FREESHIP30K' => ['type' => 'fixed', 'value' => 30000],
+            'DATCUTELOVE' => ['type' => 'percent', 'value' => 15], // mã yêu cầu: giảm 15%
         ];
         if (!isset($coupons[$code])) {
             session()->forget('coupon');
             return back()->withErrors(['coupon' => 'Mã không hợp lệ.']);
         }
+        // One-time usage per user for DATCUTELOVE
+        $userId = optional(session('admin'))->id;
+        if ($code === 'DATCUTELOVE' && $userId) {
+            $used = DB::table('coupon_usages')->where(['user_id'=>$userId,'code'=>$code])->exists();
+            if ($used) {
+                return back()->withErrors(['coupon' => 'Bạn đã sử dụng mã này trước đó.']);
+            }
+            DB::table('coupon_usages')->updateOrInsert(
+                ['user_id'=>$userId,'code'=>$code],
+                ['used_at'=>now()]
+            );
+        }
+        // Apply to session for current checkout
         session(['coupon' => array_merge(['code' => $code], $coupons[$code])]);
         return back()->with('success', 'Đã áp dụng mã khuyến mãi.');
+    }
+
+    public function saveCoupon(Request $request)
+    {
+        $data = $request->validate(['code' => 'required|string|max:30']);
+        $code = strtoupper(trim($data['code']));
+        // Lưu lại để hiển thị ở trang thanh toán; không tính giảm ở đây
+        session(['saved_coupon' => ['code' => $code]]);
+        return back()->with('success', 'Đã lưu mã giảm giá. Áp dụng khi thanh toán.');
     }
 
     public function mini()

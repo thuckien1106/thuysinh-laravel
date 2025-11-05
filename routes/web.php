@@ -22,6 +22,10 @@ Route::post('/contact', [PageController::class, 'submitContact'])->name('contact
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 // Listing & search
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+// Sản phẩm giảm giá
+Route::get('/sale', [ProductController::class, 'sale'])->name('products.sale');
+// Lưu mã giảm giá (không áp dụng ngay)
+Route::post('/coupon/save', [CartController::class, 'saveCoupon'])->name('coupon.save');
 // Reviews
 Route::post('/product/{id}/reviews', [ProductController::class, 'addReview'])->name('product.review.add');
 
@@ -33,6 +37,7 @@ Route::middleware('customer.role')->group(function () {
     Route::post('/checkout', [OrderController::class, 'process'])->name('checkout.process');
     Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.mine');
     Route::post('/my-orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/my-orders/{id}/received', [OrderController::class, 'received'])->name('orders.received');
     Route::get('/thank-you/{id}', [OrderController::class, 'thankyou'])->name('order.thankyou');
 });
 
@@ -94,10 +99,36 @@ Route::prefix('admin')->middleware('admin.role')->group(function () {
     Route::get('/products/{id}/edit', [\App\Http\Controllers\Admin\ProductAdminController::class, 'edit'])->name('admin.products.edit');
     Route::put('/products/{id}', [\App\Http\Controllers\Admin\ProductAdminController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{id}', [\App\Http\Controllers\Admin\ProductAdminController::class, 'destroy'])->name('admin.products.destroy');
+    // Quick discount schedule
+    Route::post('/products/{id}/discount', [\App\Http\Controllers\Admin\ProductAdminController::class, 'setDiscount'])->name('admin.products.discount');
 
     // Orders
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderAdminController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderAdminController::class, 'show'])->name('admin.orders.show');
     Route::post('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderAdminController::class, 'updateStatus'])->name('admin.orders.status');
     Route::get('/orders-export/csv', [\App\Http\Controllers\Admin\OrderAdminController::class, 'exportCsv'])->name('admin.orders.export.csv');
+
+    // Brands CRUD
+    Route::get('/brands', [\App\Http\Controllers\Admin\BrandAdminController::class, 'index'])->name('admin.brands.index');
+    Route::get('/brands/create', [\App\Http\Controllers\Admin\BrandAdminController::class, 'create'])->name('admin.brands.create');
+    Route::post('/brands', [\App\Http\Controllers\Admin\BrandAdminController::class, 'store'])->name('admin.brands.store');
+    Route::get('/brands/{id}/edit', [\App\Http\Controllers\Admin\BrandAdminController::class, 'edit'])->name('admin.brands.edit');
+    Route::put('/brands/{id}', [\App\Http\Controllers\Admin\BrandAdminController::class, 'update'])->name('admin.brands.update');
+    Route::delete('/brands/{id}', [\App\Http\Controllers\Admin\BrandAdminController::class, 'destroy'])->name('admin.brands.destroy');
+
+    // Discounts CRUD
+    Route::get('/discounts', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'index'])->name('admin.discounts.index');
+    Route::get('/discounts/create', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'create'])->name('admin.discounts.create');
+    Route::post('/discounts', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'store'])->name('admin.discounts.store');
+    Route::get('/discounts/{id}/edit', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'edit'])->name('admin.discounts.edit');
+    Route::put('/discounts/{id}', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'update'])->name('admin.discounts.update');
+    Route::delete('/discounts/{id}', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'destroy'])->name('admin.discounts.destroy');
+
+    // Categories CRUD
+    Route::get('/categories', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'index'])->name('admin.categories.index');
+    Route::get('/categories/create', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'create'])->name('admin.categories.create');
+    Route::post('/categories', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'store'])->name('admin.categories.store');
+    Route::get('/categories/{id}/edit', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'edit'])->name('admin.categories.edit');
+    Route::put('/categories/{id}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'update'])->name('admin.categories.update');
+    Route::delete('/categories/{id}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'destroy'])->name('admin.categories.destroy');
 });

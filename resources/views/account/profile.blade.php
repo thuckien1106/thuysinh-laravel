@@ -7,20 +7,27 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <h5 class="fw-bold mb-3">Thông tin tài khoản & địa chỉ nhận hàng</h5>
+        @if($errors->any())
+          <div class="alert alert-danger py-2 mb-3">{{ $errors->first() }}</div>
+        @endif
         <form method="POST" action="{{ route('account.profile.save') }}">
           @csrf
+          @if(request('from')==='checkout')
+            <input type="hidden" name="from" value="checkout">
+            <div class="alert alert-info py-2">Vui lòng điền đầy đủ thông tin để tiếp tục thanh toán.</div>
+          @endif
 
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Họ tên</label>
-              <input type="text" class="form-control" name="full_name" value="{{ old('full_name', $customer->full_name ?? '') }}" placeholder="Nguyễn Văn A">
+              <label class="form-label">Họ tên @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <input type="text" class="form-control" name="full_name" value="{{ old('full_name', $customer->full_name ?? '') }}" placeholder="Nguyễn Văn A" @if(request('from')==='checkout') required @endif>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Số điện thoại</label>
-              <input type="text" class="form-control" name="phone" value="{{ old('phone', $customer->phone ?? '') }}" placeholder="090...">
+              <label class="form-label">Số điện thoại @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <input type="text" class="form-control" name="phone" value="{{ old('phone', $customer->phone ?? '') }}" placeholder="090..." @if(request('from')==='checkout') required @endif>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Email</label>
+              <label class="form-label">Email <span class="text-danger">*</span></label>
               <input type="email" class="form-control" name="email" value="{{ old('email', $user->email) }}" required>
             </div>
             <div class="col-md-6">
@@ -33,20 +40,20 @@
 
           <div class="row g-3">
             <div class="col-md-12">
-              <label class="form-label">Địa chỉ nhận hàng</label>
-              <input type="text" class="form-control" name="address_line" value="{{ old('address_line', $address->address_line ?? ($customer->address ?? '')) }}" placeholder="Số nhà, đường, ...">
+              <label class="form-label">Địa chỉ nhận hàng @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <input type="text" class="form-control" name="address_line" value="{{ old('address_line', $address->address_line ?? ($customer->address ?? '')) }}" placeholder="Số nhà, đường, ..." @if(request('from')==='checkout') required @endif>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Tỉnh/Thành</label>
-              <select class="form-select" id="provinceSelect" name="province" data-selected="{{ old('province', $address->province ?? '') }}"></select>
+              <label class="form-label">Tỉnh/Thành @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <select class="form-select" id="provinceSelect" name="province" data-selected="{{ old('province', $address->province ?? '') }}" @if(request('from')==='checkout') required @endif></select>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Quận/Huyện</label>
-              <select class="form-select" id="districtSelect" name="district" data-selected="{{ old('district', $address->district ?? '') }}"></select>
+              <label class="form-label">Quận/Huyện @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <select class="form-select" id="districtSelect" name="district" data-selected="{{ old('district', $address->district ?? '') }}" @if(request('from')==='checkout') required @endif></select>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Phường/Xã</label>
-              <select class="form-select" id="wardSelect" name="ward" data-selected="{{ old('ward', $address->ward ?? '') }}"></select>
+              <label class="form-label">Phường/Xã @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+              <select class="form-select" id="wardSelect" name="ward" data-selected="{{ old('ward', $address->ward ?? '') }}" @if(request('from')==='checkout') required @endif></select>
             </div>
           </div>
 
