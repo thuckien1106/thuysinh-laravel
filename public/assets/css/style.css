@@ -27,6 +27,7 @@ body {
     color: var(--text-dark);
     margin: 0;
 }
+html { scroll-behavior: smooth; }
 
 /* ======= DARK MODE ======= */
 body.dark {
@@ -124,34 +125,64 @@ body.dark .alert { border-color: var(--border); }
 
 /* ======= HERO ======= */
 .hero-ocean {
-    background: linear-gradient(135deg, #e8f4ff 0%, #ffffff 100%);
-    border-radius: 18px;
-    padding: 4rem 3rem;
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
+    /* Kiểu hero theo thiết kế mới + full chiều cao 1 trang */
+    background-color: #f1f8fc;
+    border-radius: 20px;
+    padding: 60px 80px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
+    gap: 50px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    max-width: 1100px;
+    /* Đủ 1 trang nhìn trọn vẹn dưới navbar sticky */
+    min-height: calc(100vh - 100px);
+    margin: 20px auto 40px;
 }
-.hero-ocean .text {
-    flex: 1 1 45%;
-}
+.hero-ocean .text { flex: 1 1 300px; min-width: 300px; }
 .hero-ocean .text h1 {
-    font-size: 2.5rem;
-    color: var(--blue-dark);
-    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    /* To – đẹp – dễ nhìn, co giãn mượt */
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #1b5e20;
+    margin-bottom: 20px;
+    position: relative;
+    text-wrap: balance;
+}
+.hero-ocean .text h1::after{
+    content: "";
+    position: absolute;
+    bottom: 8px; left: 0;
+    width: 60%; height: 12px;
+    background-color: #d3ebfa;
+    z-index: -1;
 }
 .hero-ocean .text p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
+    color: #5f6368;
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 25px;
 }
-.hero-ocean img {
-    flex: 1 1 45%;
-    max-width: 420px;
-    margin: auto;
-    border-radius: 18px;
-    box-shadow: 0 4px 12px rgba(0, 119, 194, 0.25);
+/* Dark mode readability */
+body.dark .hero-ocean .text h1 { color: #c7f9cc; }
+body.dark .hero-ocean .text p  { color: #cbd5e1; }
+
+/* Cute accent and better CTA size */
+.hero-ocean .text { position: relative; }
+
+.hero-ocean .btn-ocean{
+    background: linear-gradient(135deg, #0077c2, #005fa3);
+    color: #fff; border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px; font-weight: 600;
 }
+.hero-ocean .btn-ocean:hover{ transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,123,194,.3); }
+.hero-ocean img { flex: 1 1 300px; max-width: 480px; margin:auto; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.15); }
 
 /* ======= BUTTONS ======= */
 .btn-ocean {
@@ -223,20 +254,15 @@ body.dark .alert { border-color: var(--border); }
 }
 
 /* ======= RESPONSIVE ======= */
-@media (max-width: 768px) {
-    .hero-ocean {
-        flex-direction: column;
-        text-align: center;
-        padding: 2.5rem 1.5rem;
-    }
-    .hero-ocean img {
-        margin-top: 1.5rem;
-        max-width: 300px;
-    }
-    .hero-ocean .text h1 {
-        font-size: 2rem;
-    }
+@media (max-width: 900px){
+    .hero-ocean{ padding: 40px 20px; }
+    .hero-ocean{ flex-direction: column; text-align: center; }
+    .hero-ocean img{ margin-top: 16px; max-width: 360px; text-align:center; }
+    .hero-ocean .text h1::after{ left:50%; transform: translateX(-50%); }
 }
+
+/* Anchor scroll offset so section title aligns below sticky navbar */
+#products { scroll-margin-top: 90px; }
 /* Admin Cards */
 .card p {
     color: var(--text-muted);

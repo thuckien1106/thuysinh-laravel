@@ -5,6 +5,12 @@
 
     RewriteEngine On
 
+    # Force UTF-8 for HTML responses
+    <IfModule mod_headers.c>
+        AddDefaultCharset UTF-8
+        Header set Content-Type "text/html; charset=UTF-8"
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

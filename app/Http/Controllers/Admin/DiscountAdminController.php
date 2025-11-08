@@ -5,98 +5,138 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{Product, ProductDiscount};
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Admin\StoreProductDiscountRequest;
+use App\Http\Requests\Admin\UpdateProductDiscountRequest;
+use Carbon\Carbon;
 
 class DiscountAdminController extends Controller
 {
+    // Danh sách chương trình giảm giá
     public function index(Request $request)
     {
-        // Tự động xoá các bản ghi hết hạn
-        \App\Models\ProductDiscount::where('end_at','<', now())->delete();
-        $status = $request->query('status'); // active|upcoming|expired|all
+        $status = $request->query('status'); // active | upcoming | expired | all
         $productId = $request->query('product_id');
 
         $query = ProductDiscount::query()->with('product');
-        if ($productId) $query->where('product_id', $productId);
-        if ($status === 'active') {
-            $query->where('start_at','<=', now())->where('end_at','>=', now());
-        } elseif ($status === 'upcoming') {
-            $query->where('start_at','>', now());
-        } elseif ($status === 'expired') {
-            $query->where('end_at','<', now());
+
+        if ($productId) {
+            $query->where('product_id', $productId);
         }
-        $discounts = $query->orderByDesc('start_at')->paginate(15)->withQueryString();
-        $products = Product::orderBy('name')->get(['id','name']);
-        return view('admin.discounts.index', compact('discounts','products','status','productId'));
+
+        if ($status === 'active') {
+            $query->where('start_at', '<=', now())
+                  ->where('end_at', '>=', now());
+        } elseif ($status === 'upcoming') {
+            $query->where('start_at', '>', now());
+        } elseif ($status === 'expired') {
+            $query->where('end_at', '<', now());
+        }
+
+        $discounts = $query->orderByDesc('start_at')
+                           ->paginate(15)
+                           ->withQueryString();
+
+        $products = Product::orderBy('name')->get(['id', 'name']);
+
+        return view('admin.discounts.index', compact('discounts', 'products', 'status', 'productId'));
     }
 
+    // Hiển thị form tạo giảm giá
     public function create()
     {
-        // Chỉ hiển thị sản phẩm CHƯA có giảm giá đang hiệu lực
+        // Chỉ hiện thị sản phẩm chưa có giảm giá hiệu lực
         $products = Product::orderBy('name')
-            ->whereDoesntHave('discounts', function($q){
-                $q->where('end_at','>=', now());
+            ->whereDoesntHave('discounts', function ($q) {
+                $q->where('end_at', '>=', now());
             })
-            ->get(['id','name']);
+            ->get(['id', 'name']);
+
         return view('admin.discounts.create', compact('products'));
     }
 
-    public function store(Request $request)
+    // Lưu giảm giá mới
+    public function store(StoreProductDiscountRequest $request)
     {
-        $data = $request->validate([
-            'product_id' => 'required|integer|exists:products,id',
-            'percent' => 'required|integer|min:1|max:90',
-            'start_at' => 'required|date',
-            'end_at' => 'required|date|after:start_at',
-            'note' => 'nullable|string|max:120',
-        ]);
-        // Chỉ tạo khi sản phẩm KHÔNG có giảm giá đang hiệu lực
-        $hasActive = ProductDiscount::where('product_id', $data['product_id'])
-            ->where('end_at', '>=', now())
+        $data = $request->validated();
+
+        // Đảm bảo không trùng lặp/đè khoảng thời gian với cùng sản phẩm
+        $overlap = ProductDiscount::where('product_id', $data['product_id'])
+            ->where(function ($q) use ($data) {
+                $q->whereBetween('start_at', [$data['start_at'], $data['end_at']])
+                  ->orWhereBetween('end_at', [$data['start_at'], $data['end_at']])
+                  ->orWhere(function ($q2) use ($data) {
+                      $q2->where('start_at', '<=', $data['start_at'])
+                         ->where('end_at', '>=', $data['end_at']);
+                  });
+            })
             ->exists();
-        if ($hasActive) {
-            return back()->withErrors(['discount' => 'Sản phẩm đang có giảm giá hiệu lực. Hãy xóa/đợi hết hạn trước khi tạo mới.']);
+
+        if ($overlap) {
+            return back()->withErrors([
+                'discount' => 'Khoảng thời gian giảm giá bị chồng lấn với bản ghi khác của cùng sản phẩm.'
+            ])->withInput();
         }
+
         ProductDiscount::create($data);
-        return redirect()->route('admin.discounts.index')->with('success','Đã tạo giảm giá.');
+
+        return redirect()->route('admin.discounts.index')->with('success', 'Đã tạo giảm giá.');
     }
 
-    public function edit($id)
+    // Form chỉnh sửa
+    public function edit(ProductDiscount $discount)
     {
-        $discount = ProductDiscount::findOrFail($id);
-        // Khi sửa: chỉ cho phép sửa bản ghi hiện tại của chính sản phẩm đó
-        $products = Product::where('id', $discount->product_id)->get(['id','name']);
-        return view('admin.discounts.edit', compact('discount','products'));
+        // Chỉ hiển thị sản phẩm hiện tại của bản ghi giảm giá
+        $products = Product::where('id', $discount->product_id)->get(['id', 'name']);
+        return view('admin.discounts.edit', compact('discount', 'products'));
     }
 
-    public function update(Request $request, $id)
+    // Cập nhật giảm giá
+    public function update(UpdateProductDiscountRequest $request, ProductDiscount $discount)
     {
-        $discount = ProductDiscount::findOrFail($id);
-        $data = $request->validate([
-            'product_id' => 'required|integer|exists:products,id',
-            'percent' => 'required|integer|min:1|max:90',
-            'start_at' => 'required|date',
-            'end_at' => 'required|date|after:start_at',
-            'note' => 'nullable|string|max:120',
-        ]);
-        // Nếu đổi sang product khác, không cho phép nếu product đó đang có giảm giá hiệu lực
+        $data = $request->validated();
+
+        // Nếu đổi sang sản phẩm khác, kiểm tra overlap với các bản ghi khác
         if ($discount->product_id != $data['product_id']) {
             $targetHasActive = ProductDiscount::where('product_id', $data['product_id'])
                 ->where('end_at', '>=', now())
                 ->where('id', '!=', $discount->id)
                 ->exists();
+
             if ($targetHasActive) {
-                return back()->withErrors(['discount' => 'Sản phẩm đích đang có giảm giá hiệu lực. Hãy xóa/đợi hết hạn trước khi chuyển.']);
+                return back()->withErrors([
+                    'discount' => 'Sản phẩm đích đang có giảm giá hiệu lực. Hãy xóa hoặc đợi hết hạn trước khi chuyển.'
+                ]);
             }
         }
+
+        $overlap = ProductDiscount::where('product_id', $data['product_id'])
+            ->where('id', '!=', $discount->id)
+            ->where(function ($q) use ($data) {
+                $q->whereBetween('start_at', [$data['start_at'], $data['end_at']])
+                  ->orWhereBetween('end_at', [$data['start_at'], $data['end_at']])
+                  ->orWhere(function ($q2) use ($data) {
+                      $q2->where('start_at', '<=', $data['start_at'])
+                         ->where('end_at', '>=', $data['end_at']);
+                  });
+            })
+            ->exists();
+
+        if ($overlap) {
+            return back()->withErrors([
+                'discount' => 'Khoảng thời gian giảm giá bị chồng lấn với bản ghi khác của cùng sản phẩm.'
+            ])->withInput();
+        }
+
         $discount->update($data);
-        return redirect()->route('admin.discounts.index')->with('success','Đã cập nhật giảm giá.');
+
+        return redirect()->route('admin.discounts.index')->with('success', 'Đã cập nhật giảm giá.');
     }
 
-    public function destroy($id)
+    // Xóa giảm giá
+    public function destroy(ProductDiscount $discount)
     {
-        $discount = ProductDiscount::findOrFail($id);
         $discount->delete();
-        return back()->with('success','Đã xóa giảm giá.');
+        return back()->with('success', 'Đã xóa giảm giá.');
     }
 }
+
