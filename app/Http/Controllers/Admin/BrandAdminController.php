@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreBrandRequest;
+use App\Http\Requests\Admin\UpdateBrandRequest;
 use App\Models\Brand;
 
 class BrandAdminController extends Controller
@@ -22,38 +24,33 @@ class BrandAdminController extends Controller
         return view('admin.brands.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreBrandRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:120|unique:brands,name',
-            'slug' => 'nullable|string|max:140|unique:brands,slug',
-        ]);
+        $data = $request->validated();
         Brand::create($data);
         return redirect()->route('admin.brands.index')->with('success','Đã tạo thương hiệu.');
     }
 
-    public function edit($id)
+    public function edit(Brand $brand)
     {
-        $brand = Brand::findOrFail($id);
-        return view('admin.brands.edit', compact('brand'));
+                return view('admin.brands.edit', compact('brand'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateBrandRequest $request, Brand $brand)
     {
-        $brand = Brand::findOrFail($id);
-        $data = $request->validate([
-            'name' => 'required|string|max:120|unique:brands,name,'.$brand->id,
-            'slug' => 'nullable|string|max:140|unique:brands,slug,'.$brand->id,
-        ]);
+                $data = $request->validated();
         $brand->update($data);
         return redirect()->route('admin.brands.index')->with('success','Đã cập nhật thương hiệu.');
     }
 
-    public function destroy($id)
+    public function destroy(Brand $brand)
     {
-        $brand = Brand::findOrFail($id);
-        $brand->delete();
+                $brand->delete();
         return back()->with('success','Đã xóa thương hiệu.');
     }
 }
+
+
+
+
 

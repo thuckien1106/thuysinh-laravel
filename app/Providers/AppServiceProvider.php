@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Blade;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,12 @@ class AppServiceProvider extends ServiceProvider
         } else {
             Paginator::useBootstrap();
         }
+
+        // Locale + datetime helpers
+        try { Carbon::setLocale(config('app.locale', 'vi')); } catch (\Throwable $e) {}
+        Blade::directive('dt', function ($expression) {
+            return "<?php echo optional($expression)->timezone(config('app.timezone'))->format('d/m/Y H:i'); ?>";
+        });
 
         // Share categories and brands for header dropdowns
         View::composer('layouts.header', function ($view) {

@@ -27,11 +27,11 @@
     </div>
     <div class="col-md-3">
       <label class="form-label">Bắt đầu</label>
-      <input type="datetime-local" name="start_at" class="form-control" value="{{ str_replace(' ', 'T', $discount->start_at) }}" required>
+      <input type="datetime-local" name="start_at" class="form-control" value="{{ old('start_at', optional($discount->start_at)->format('Y-m-d\\TH:i')) }}" required>
     </div>
     <div class="col-md-3">
       <label class="form-label">Kết thúc</label>
-      <input type="datetime-local" name="end_at" class="form-control" value="{{ str_replace(' ', 'T', $discount->end_at) }}" required>
+      <input type="datetime-local" name="end_at" class="form-control" value="{{ old('end_at', optional($discount->end_at)->format('Y-m-d\\TH:i')) }}" required>
     </div>
     <div class="col-12">
       <button class="btn btn-ocean">Cập nhật</button>
@@ -39,4 +39,3 @@
   </form>
 </div>
 @endsection
-

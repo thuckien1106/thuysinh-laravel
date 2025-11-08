@@ -72,7 +72,7 @@ class OrderAdminController extends Controller
             $out = fopen('php://output','w');
             // BOM for Excel UTF-8
             fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($out, ['ID','Khách hàng','Địa chỉ','Tổng','Trạng thái','Ngày']);
+            fputcsv($out, ['ID','KhÃ¡ch hÃ ng','Äá»‹a chá»‰','Tá»•ng','Tráº¡ng thÃ¡i','NgÃ y']);
             foreach ($rows as $r) {
                 $label = \App\Models\Order::STATUS_OPTIONS[$r->status] ?? $r->status;
                 fputcsv($out, [$r->id, $r->customer_name, $r->customer_address, $r->total, $label, $r->created_at]);
@@ -98,7 +98,7 @@ class OrderAdminController extends Controller
         $data = $request->validate(['status' => 'required|string|max:50']);
         $code = \App\Models\Order::normalizeStatus($data['status']);
         if (!array_key_exists($code ?? '', \App\Models\Order::STATUS_OPTIONS)) {
-            return back()->withErrors(['status' => 'Giá trị trạng thái không hợp lệ.']);
+            return back()->withErrors(['status' => 'GiÃ¡ trá»‹ tráº¡ng thÃ¡i khÃ´ng há»£p lá»‡.']);
         }
         $order->update(['status' => $code]);
 
@@ -114,7 +114,7 @@ class OrderAdminController extends Controller
             $payment->update(['status'=>'paid', 'paid_at'=>now()]);
         } elseif ($code === 'cancelled') {
             $shipment->update(['status'=>'cancelled']);
-            // Leave payment pending (or failed) – demo keeps pending
+            // Leave payment pending (or failed) â€“ demo keeps pending
         }
         return back()->with('success', 'Đã cập nhật trạng thái đơn hàng.');
     }

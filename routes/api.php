@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductApiController;
+use App\Http\Controllers\Api\DiscountApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Public product APIs
 Route::get('/products', [ProductApiController::class, 'index']);
 Route::get('/products/{product}', [ProductApiController::class, 'show']);
+
+// Live search products by name (public)
+Route::get('/search/products', function (Illuminate\Http\Request $r) {
+    $q = trim((string) $r->query('q',''));
+    return \App\Models\Product::select('id','name')
+        ->when($q !== '', fn($qr)=>$qr->where('name','like', "%$q%"))
+        ->orderBy('name')->limit(10)->get();
+});
+
+// Discounts API (public read)
+Route::get('/discounts', [DiscountApiController::class, 'index']);
+Route::get('/discounts/{discount}', [DiscountApiController::class, 'show']);

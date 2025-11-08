@@ -9,7 +9,7 @@ class PageController extends Controller
 {
     public function home()
     {
-        // Sản phẩm đang sale
+        // Sáº£n pháº©m Ä‘ang sale
         $saleProducts = Product::with('activeDiscount')
             ->whereHas('discounts', function($q){
                 $q->where('start_at','<=', now())->where('end_at','>=', now());
@@ -18,7 +18,7 @@ class PageController extends Controller
             ->limit(12)
             ->get();
 
-        // IDs sản phẩm top bán chạy
+        // IDs sáº£n pháº©m top bÃ¡n cháº¡y
         $topIds = \Illuminate\Support\Facades\DB::table('order_details as od')
             ->select('od.product_id', \Illuminate\Support\Facades\DB::raw('SUM(od.quantity) as qty'))
             ->groupBy('od.product_id')
@@ -28,10 +28,10 @@ class PageController extends Controller
             ->toArray();
         $topProducts = Product::with('activeDiscount')->whereIn('id', $topIds)->get();
 
-        // Nổi bật = union sale + top (unique theo id)
+        // Ná»•i báº­t = union sale + top (unique theo id)
         $featuredProducts = $saleProducts->concat($topProducts)->unique('id')->take(12);
 
-        // Các sản phẩm khác (không thuộc featured)
+        // CÃ¡c sáº£n pháº©m khÃ¡c (khÃ´ng thuá»™c featured)
         $otherProducts = Product::with('activeDiscount')
             ->whereNotIn('id', $featuredProducts->pluck('id'))
             ->orderByDesc('created_at')

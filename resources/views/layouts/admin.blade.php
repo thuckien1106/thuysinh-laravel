@@ -15,8 +15,14 @@
   <style>
     /* Bảo đảm lịch nổi trên modal và không bị che */
     .flatpickr-calendar { z-index: 200000 !important; }
+    /* Offset calendar downward by 40px from its anchor */
+    .flatpickr-calendar { margin-top: 130px; }
     /* Thu nhỏ lịch ~20% và giữ neo ở góc trên-trái để canh vị trí ổn định */
-    .flatpickr-calendar { transform: none !important; width: 320px; font-size: 14px; }
+    /* Shrink entire calendar uniformly by ~20% */
+    .flatpickr-calendar { zoom: .8; }
+    @supports not (zoom: 1) {
+      .flatpickr-calendar { transform: scale(.8); transform-origin: top left; }
+    }
     /* Kéo modal giảm giá lên gần đỉnh màn hình (xấp xỉ 30% so với vị trí giữa) */
     #discountModal .modal-dialog { align-self: flex-start; margin-top: 10vh; }
   </style>

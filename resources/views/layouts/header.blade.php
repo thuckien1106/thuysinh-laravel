@@ -5,7 +5,7 @@
   <title>@yield('title', 'AquaShop')</title>
   <link href="{{ asset('assets/css/style.css') }}?v={{ @filemtime(public_path('assets/css/style.css')) }}" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Poppins:wght@400;600;700&display=swap&subset=vietnamese" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     /* Hide legacy text cart link in navbar; we show icon version instead */
@@ -210,8 +210,50 @@
     };
   });
   </script>
+  <script>
+  // Enhance navbar search: clickable icon submits; suggestions while typing
+  (function(){
+    function ready(fn){ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', fn); } else fn(); }
+    ready(function(){
+      var form = document.querySelector('nav .navbar .nav-item form[role="search"], nav .navbar form[role="search"], form[role="search"]');
+      if(!form) return;
+      var group = form.querySelector('.input-group');
+      var icon  = group && group.querySelector('.input-group-text');
+      var input = form.querySelector('input[name="q"]');
+      if(icon){ icon.style.cursor='pointer'; icon.setAttribute('role','button'); icon.addEventListener('click', function(){ try{ form.submit(); }catch(_){ } }); }
+      if(!input) return;
+
+      var list = document.getElementById('navSearchSuggest');
+      if(!list){ list = document.createElement('div'); list.id='navSearchSuggest'; list.className='search-suggest'; form.appendChild(list); }
+      function hide(){ list.style.display='none'; input.setAttribute('aria-expanded','false'); }
+      function show(){ list.style.display='block'; input.setAttribute('aria-expanded','true'); }
+      function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
+      var t, ctrl; var origin = (window.location && window.location.origin) || '';
+      function render(items){
+        if(!items || !items.length){ hide(); return; }
+        var html = items.map(function(it){ return '<a href="'+origin+'/product/'+it.id+'"><i class="bi bi-box-seam me-2 text-primary"></i>'+esc(it.name)+'</a>'; }).join('');
+        html += '<div class="footer"><a class="text-decoration-none" href="'+origin+'/products?q='+encodeURIComponent(input.value||'')+'">Tìm "'+esc(input.value||'')+'"</a></div>';
+        list.innerHTML = html; show();
+      }
+      function fetchSuggest(q){
+        if(ctrl && ctrl.abort) try{ ctrl.abort(); }catch(_){ }
+        if(!q){ hide(); return; }
+        try{ ctrl = new AbortController(); }catch(_){ ctrl = null; }
+        fetch(origin+'/api/search/products?q='+encodeURIComponent(q), { signal: ctrl?ctrl.signal:undefined })
+          .then(function(r){ return r.json(); })
+          .then(function(d){ render(Array.isArray(d)? d.slice(0,8) : []); })
+          .catch(function(){});
+      }
+      input.addEventListener('input', function(){ clearTimeout(t); var v=this.value.trim(); t=setTimeout(function(){ fetchSuggest(v); }, 160); });
+      input.addEventListener('focus', function(){ var v=this.value.trim(); if(v) fetchSuggest(v); });
+      document.addEventListener('click', function(e){ if(!form.contains(e.target)) hide(); });
+    });
+  })();
+  </script>
   <button id="scrollTopBtn" style="position:fixed; right:16px; bottom:18px; display:none; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; border:none; background:linear-gradient(90deg, var(--blue-dark), var(--blue-main)); color:#fff; box-shadow:0 8px 20px rgba(0,0,0,.18); z-index:1050;">
     <i class="bi bi-arrow-up"></i>
   </button>
 </body>
 </html>
+
+

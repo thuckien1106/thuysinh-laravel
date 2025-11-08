@@ -91,7 +91,7 @@ class ProductController extends Controller
             ->limit(8)
             ->pluck('od.product_id')
             ->toArray();
-        // Lấy danh mục/brand cho menu dropdown header nếu có
+        // Láº¥y danh má»¥c/brand cho menu dropdown header náº¿u cÃ³
         $categories = \Illuminate\Support\Facades\DB::table('categories')->orderBy('name')->get();
         $brands = \Illuminate\Support\Facades\DB::table('brands')->orderBy('name')->get();
         return view('products_sale', compact('products','categories','brands','topIds'));
@@ -106,7 +106,7 @@ class ProductController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string|max:1000',
         ]);
-        // Chỉ cho phép đánh giá sau khi đã nhận hàng (đơn hoàn thành)
+        // Chá»‰ cho phÃ©p Ä‘Ã¡nh giÃ¡ sau khi Ä‘Ã£ nháº­n hÃ ng (Ä‘Æ¡n hoÃ n thÃ nh)
         $hasCompletedOrder = \App\Models\Order::where('user_id', $user->id)
             ->where('status','completed')
             ->whereIn('id', function($q) use ($product){
@@ -114,12 +114,12 @@ class ProductController extends Controller
             })
             ->exists();
         if (!$hasCompletedOrder) {
-            return back()->withErrors(['review' => 'Bạn chỉ có thể đánh giá sau khi đã nhận hàng.']);
+            return back()->withErrors(['review' => 'Báº¡n chá»‰ cÃ³ thá»ƒ Ä‘Ã¡nh giÃ¡ sau khi Ä‘Ã£ nháº­n hÃ ng.']);
         }
-        // Mỗi người dùng chỉ đánh giá 1 lần cho mỗi sản phẩm
+        // Má»—i ngÆ°á»i dÃ¹ng chá»‰ Ä‘Ã¡nh giÃ¡ 1 láº§n cho má»—i sáº£n pháº©m
         $already = Review::where('product_id',$product->id)->where('user_id',$user->id)->exists();
         if ($already) {
-            return back()->withErrors(['review' => 'Bạn đã đánh giá sản phẩm này rồi.']);
+            return back()->withErrors(['review' => 'Báº¡n Ä‘Ã£ Ä‘Ã¡nh giÃ¡ sáº£n pháº©m nÃ y rá»“i.']);
         }
         Review::create([
             'product_id' => $product->id,

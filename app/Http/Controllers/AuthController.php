@@ -8,7 +8,7 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Show login form
+    // Hiển thị form đăng nhập
     public function loginForm()
     {
         if (session('admin')) {
@@ -18,7 +18,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle login
+    // Xử lý đăng nhập
     public function login(Request $request)
     {
         $request->validate([
@@ -42,7 +42,7 @@ class AuthController extends Controller
                 $isValid = true;
             } elseif ($user->password === $password) {
                 $isValid = true;
-                // Nâng cấp mật khẩu plain-text thành bcrypt ngay sau lần đăng nhập đầu
+                // Nâng cấp mật khẩu plain-text thành bcrypt sau khi đăng nhập lần đầu
                 try { $user->password = Hash::make($password); $user->save(); } catch (\Throwable $e) {}
             }
             if ($isValid) {
@@ -56,7 +56,7 @@ class AuthController extends Controller
         return back()->withErrors(['login' => 'Tên đăng nhập hoặc mật khẩu không đúng.']);
     }
 
-    // Show register form
+    // Hiển thị form đăng ký
     public function register()
     {
         if (session('admin')) {
@@ -65,24 +65,17 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    // Handle register
+    // Xử lý đăng ký
     public function registerProcess(Request $request)
     {
         $request->validate([
             'username' => 'required|unique:users,username|min:4|max:30',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-        ], [
-            'username.required' => 'Vui lòng nhập tên đăng nhập.',
-            'username.unique' => 'Tên đăng nhập đã tồn tại.',
-            'email.required' => 'Vui lòng nhập email.',
-            'email.unique' => 'Email này đã được sử dụng.',
-            'password.required' => 'Vui lòng nhập mật khẩu.',
-            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
         ]);
 
         $user = new User();
-        $user->name = $request->username; // đảm bảo cột name (migration mặc định) có giá trị
+        $user->name = $request->username;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
@@ -92,7 +85,7 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
 
-    // Logout
+    // Đăng xuất
     public function logout(Request $request)
     {
         $request->session()->forget('admin');
@@ -100,3 +93,4 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Đã đăng xuất thành công.');
     }
 }
+

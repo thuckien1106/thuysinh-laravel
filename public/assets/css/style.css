@@ -17,7 +17,7 @@
 }
 
 * {
-    font-family: "Poppins", sans-serif;
+    font-family: "Be Vietnam Pro", "Poppins", sans-serif;
     box-sizing: border-box;
     transition: all 0.3s ease;
 }
@@ -124,51 +124,40 @@ body.dark .alert { border-color: var(--border); }
 .empty-state .icon { font-size: 56px; color: var(--blue-main); opacity: .6; }
 
 /* ======= HERO ======= */
-.hero-ocean {
-    /* Kiểu hero theo thiết kế mới + full chiều cao 1 trang */
-    background-color: #f1f8fc;
+.hero-ocean { 
+    /* Kiểu hero theo thiết kế mới + phủ màn hình nhưng không quá trống */
+    /* Base + subtle radial lights baked into background */
+    background:
+      radial-gradient(600px 600px at 90% 10%, rgba(0,119,194,.08), transparent 60%),
+      radial-gradient(700px 700px at 10% 100%, rgba(0,95,163,.06), transparent 62%),
+      #f1f8fc;
     border-radius: 20px;
-    padding: 60px 80px;
+    padding: 56px 60px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 50px;
+    gap: 36px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    max-width: 1100px;
-    /* Đủ 1 trang nhìn trọn vẹn dưới navbar sticky */
-    min-height: calc(100vh - 100px);
-    margin: 20px auto 40px;
-}
-.hero-ocean .text { flex: 1 1 300px; min-width: 300px; }
-.hero-ocean .text h1 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 800;
-    /* To – đẹp – dễ nhìn, co giãn mượt */
-    font-size: clamp(2.6rem, 6vw, 4.2rem);
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-    color: #1b5e20;
-    margin-bottom: 20px;
+    max-width: 1200px;
+    /* Chiều cao linh hoạt để không quá trống trên màn hình rất cao */
+    min-height: clamp(560px, 78vh, 820px);
+    margin: 24px auto 36px;
     position: relative;
-    text-wrap: balance;
+    overflow: hidden;
 }
-.hero-ocean .text h1::after{
-    content: "";
-    position: absolute;
-    bottom: 8px; left: 0;
-    width: 60%; height: 12px;
-    background-color: #d3ebfa;
-    z-index: -1;
-}
+.hero-ocean .text { flex: 1.2 1 420px; min-width: 320px; text-align:center; display:flex; flex-direction:column; align-items:center; }
+ .hero-ocean .text h1 {`n    font-family: 'Poppins', sans-serif;`n    font-weight: 800;`n    font-size: clamp(2.2rem, 4.8vw, 3.4rem);`n    line-height: 1.12;`n    letter-spacing: -0.015em;`n    color: #1b5e20;`n    margin-bottom: 20px;`n    position: relative;`n    text-wrap: balance;`n    max-width: 20ch;`n    margin-left: auto; margin-right: auto;`n    -webkit-font-smoothing: antialiased;`n    -moz-osx-font-smoothing: grayscale;`n }
+
 .hero-ocean .text p {
     color: #5f6368;
     font-size: 17px;
     line-height: 1.7;
-    margin-bottom: 25px;
+    margin-bottom: 26px;
+    max-width: 58ch;
 }
 /* Dark mode readability */
-body.dark .hero-ocean .text h1 { color: #c7f9cc; }
+body.dark  .hero-ocean .text h1 {`n    font-family: 'Poppins', sans-serif;`n    font-weight: 800;`n    font-size: clamp(2.2rem, 4.8vw, 3.4rem);`n    line-height: 1.12;`n    letter-spacing: -0.015em;`n    color: #1b5e20;`n    margin-bottom: 20px;`n    position: relative;`n    text-wrap: balance;`n    max-width: 20ch;`n    margin-left: auto; margin-right: auto;`n    -webkit-font-smoothing: antialiased;`n    -moz-osx-font-smoothing: grayscale;`n }
 body.dark .hero-ocean .text p  { color: #cbd5e1; }
 
 /* Cute accent and better CTA size */
@@ -182,7 +171,24 @@ body.dark .hero-ocean .text p  { color: #cbd5e1; }
     font-size: 16px; font-weight: 600;
 }
 .hero-ocean .btn-ocean:hover{ transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,123,194,.3); }
-.hero-ocean img { flex: 1 1 300px; max-width: 480px; margin:auto; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.15); }
+.hero-ocean img { flex: 1 1 300px; max-width: 520px; margin:auto; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.18); }
+
+/* Gentle animated wave at bottom */
+.hero-ocean::before{
+    content:""; position:absolute; left:0; right:0; bottom:-6px; height:120px; pointer-events:none;
+    background:
+      radial-gradient(40px 16px at 20px 120px, rgba(0,119,194,.14), transparent 70%) repeat-x;
+    background-size: 160px 120px;
+    animation: waveMove 9s linear infinite;
+}
+@keyframes waveMove { from { background-position-x: 0; } to { background-position-x: 160px; } }
+
+/* Cute fish swimming across */
+.hero-ocean::after{
+    content:'🐟'; position:absolute; top:14%; left:-60px; font-size:28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+    animation: swim 18s linear infinite;
+}
+@keyframes swim { 0%{ transform: translateX(0) } 100%{ transform: translateX(120vw) } }
 
 /* ======= BUTTONS ======= */
 .btn-ocean {
@@ -255,14 +261,38 @@ body.dark .hero-ocean .text p  { color: #cbd5e1; }
 
 /* ======= RESPONSIVE ======= */
 @media (max-width: 900px){
-    .hero-ocean{ padding: 40px 20px; }
+    .hero-ocean{ padding: 40px 20px; min-height: 520px; }
     .hero-ocean{ flex-direction: column; text-align: center; }
-    .hero-ocean img{ margin-top: 16px; max-width: 360px; text-align:center; }
-    .hero-ocean .text h1::after{ left:50%; transform: translateX(-50%); }
+    .hero-ocean img{ margin-top: 16px; max-width: 380px; text-align:center; }
+    
+    .hero-ocean .text h1{ font-size: clamp(1.9rem, 6.2vw, 2.6rem); max-width: 24ch; }
 }
 
 /* Anchor scroll offset so section title aligns below sticky navbar */
 #products { scroll-margin-top: 90px; }
+/* Live Search Suggest (navbar) */
+.search-suggest{display:none;position:absolute;top:100%;left:0;right:0;z-index:1051;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.12);max-height:320px;overflow:auto}
+.search-suggest a{display:block;padding:.5rem .75rem;color:#1e2a35;text-decoration:none}
+.search-suggest a:hover{background:#f2f7ff}
+.search-suggest .footer{border-top:1px solid var(--border);padding:.35rem .5rem;text-align:right}
+/* Section titles on home */
+.section-title{
+    text-align:center;
+    font-weight:800;
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    letter-spacing:-0.01em;
+    color: var(--blue-dark);
+    margin: 1.5rem 0 1rem;
+    position: relative;
+}
+.section-title::after{
+    content:"";
+    display:block;
+    width:64px; height:4px; border-radius:4px;
+    background: linear-gradient(90deg, var(--blue-dark), var(--blue-main));
+    margin:.5rem auto 0;
+    opacity:.9;
+}
 /* Admin Cards */
 .card p {
     color: var(--text-muted);
@@ -272,3 +302,6 @@ body.dark .hero-ocean .text p  { color: #cbd5e1; }
     font-size: 1.8rem;
     font-weight: 700;
 }
+
+
+

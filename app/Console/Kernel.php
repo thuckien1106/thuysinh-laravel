@@ -9,6 +9,8 @@ class Kernel extends ConsoleKernel
 {
     protected $commands = [
         \App\Console\Commands\NormalizeProductNames::class,
+        \App\Console\Commands\CleanupExpiredDiscounts::class,
+        \App\Console\Commands\FixUtf8Mojibake::class,
     ];
     /**
      * Define the application's command schedule.
@@ -18,7 +20,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('discounts:cleanup')->hourly();
     }
 
     /**

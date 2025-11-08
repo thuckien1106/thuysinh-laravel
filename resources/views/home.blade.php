@@ -4,13 +4,57 @@
 
 <section class="hero-ocean mb-5">
   <div class="text">
-    <h1>Thế giới thủy sinh ngay trong ngôi nhà bạn</h1>
+  <h1 style="
+  font-family:'Poppins',sans-serif;
+  font-size:48px;
+  font-weight:700;
+  text-align:center;
+  background:linear-gradient(90deg,#1b5e20,#00796b,#00bfa5,#1b5e20);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-size:300% 300%;
+  animation:moveGradient 6s ease infinite, fadeUp 1.5s ease forwards;
+  text-shadow:0 0 25px rgba(0,255,204,0.3);
+  letter-spacing:1px;
+  margin:60px 20px;
+  transition:transform 0.4s ease, text-shadow 0.4s ease;
+">
+  Thế giới thủy sinh ngay trong ngôi nhà bạn
+</h1>
+
+<style>
+@keyframes moveGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
     <p>Cây, cá cảnh và phụ kiện chất lượng, giao nhanh, hướng dẫn tận tâm.
       Mang lại không gian xanh thư giãn giữa cuộc sống hiện đại.</p>
     <a href="#products" class="btn btn-ocean">Khám phá ngay</a>
   </div>
   <img src="{{ asset('assets/img/hero_fish.jpg') }}" alt="AquaShop Hero">
 </section>
+<script>
+  // Smooth scroll with offset for sticky navbar
+  document.addEventListener('DOMContentLoaded', function(){
+    var link = document.querySelector('a[href=\"#products\"]');
+    var target = document.getElementById('products');
+    if(link && target){
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        var top = target.getBoundingClientRect().top + window.scrollY - 80; // offset for navbar
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
 
 @php $uid = session('admin')->id ?? 'guest'; $applied = session('coupon')['code'] ?? null; $role = session('admin')->role ?? 'guest'; @endphp
 <!-- Modal coupon hiện khi vào Trang chủ (đăng nhập, chưa áp dụng, 1 lần/đăng nhập) -->
@@ -37,7 +81,7 @@
   </div>
 </div>
 
-<h2 id="products" class="fw-semibold mb-3">Sản phẩm nổi bật</h2>
+<h2 id="products" class="section-title mb-3">SẢN PHẨM NỔI BẬT</h2>
 
 <div class="row g-4 mb-4">
   @foreach(($featuredProducts ?? collect()) as $p)
@@ -95,7 +139,7 @@
   @endforeach
 </div>
 
-<h2 class="fw-semibold mb-3">Sản phẩm khác</h2>
+<h2 class="section-title mb-3">SẢN PHẨM KHÁC</h2>
 
 <div class="row g-4">
   @foreach(($otherProducts ?? collect()) as $p)
@@ -182,3 +226,7 @@
   });
 </script>
 @endsection
+
+
+
+
