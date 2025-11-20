@@ -7,10 +7,10 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\AuthPasswordController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ChatbotController;
 
-// =========================
-// ðŸ  TRANG NGÆ¯á»œI DÃ™NG
-// =========================
+Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])
+    ->name('chatbot.ask');
 
 // Trang chÃ­nh
 Route::get('/', [PageController::class, 'home'])->name('home');
