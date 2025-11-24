@@ -13,103 +13,124 @@
 @section('content')
 
 <style>
-/* ====================== APPEAR ANIMATION ====================== */
+/* ============================================================
+   🔥 PREMUIUM SALE PAGE – AQUASHOP STYLE
+   Đồng nhất với trang danh sách Sản phẩm
+   ============================================================ */
+
+/* ---------- APPEAR ANIMATION ---------- */
 .sale-appear {
   opacity: 0;
-  transform: translateY(22px) scale(.98);
-  transition: .6s ease;
+  transform: translateY(26px) scale(.96);
+  transition: .65s ease;
 }
 .sale-appear.visible {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
-.sale-delay-1 { transition-delay: .05s; }
-.sale-delay-2 { transition-delay: .1s; }
-.sale-delay-3 { transition-delay: .15s; }
-.sale-delay-4 { transition-delay: .2s; }
+.sale-delay-1 { transition-delay: .1s }
+.sale-delay-2 { transition-delay: .2s }
+.sale-delay-3 { transition-delay: .3s }
+.sale-delay-4 { transition-delay: .4s }
 
-/* ====================== PRODUCT CARD ====================== */
+/* ---------- SALE CARD ---------- */
 .sale-card {
   border: none;
-  border-radius: 16px;
   overflow: hidden;
+  border-radius: 18px;
+  background: #ffffff;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  background: white;
-  transition: .25s ease;
+  transition: 0.35s ease;
 }
 .sale-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.14);
 }
 
 /* IMAGE */
 .sale-thumb {
-  height: 220px;
+  height: 230px;
   object-fit: cover;
-  transition: .35s ease;
+  border-radius: 14px;
+  transition: .45s ease;
 }
 .sale-card:hover .sale-thumb {
-  transform: scale(1.07);
+  transform: scale(1.08);
+  filter: brightness(1.06);
 }
 
-/* SALE BADGE */
+/* ---------- BADGE SALE ---------- */
 .badge-sale {
-  background: linear-gradient(90deg,#ef4444,#f97316);
-  padding: 6px 12px;
+  background: linear-gradient(90deg,#ff2d55,#ff6b6b);
+  padding: 7px 14px;
   border-radius: 40px;
   color: white;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(239,68,68,0.35);
+  box-shadow: 0 4px 12px rgba(255,45,85,0.35);
 }
 
-/* PRICE */
+/* ---------- PRICE ---------- */
 .sale-final {
-  color: #e63946;
+  background: linear-gradient(90deg, #e63946, #ff5f5f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
   font-size: 17px;
-  font-weight: 700;
 }
 .sale-original {
   text-decoration: line-through;
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* MODAL STYLE */
+/* ---------- MODAL STYLE (upgrade) ---------- */
 .coupon-modal .modal-content {
-  border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 12px 38px rgba(0,0,0,0.18);
 }
 .coupon-modal .modal-header {
-  background: linear-gradient(90deg,#0b5ed7,#0ea5e9);
+  background: linear-gradient(90deg,#009688,#00a8a8);
   color: #fff;
-  border-radius: 18px 18px 0 0;
+  border-radius: 20px 20px 0 0;
 }
 .coupon-desc {
   background: #fff7e6;
-  border: 1px solid #ffe6c7;
   border-radius: 12px;
-  padding: 12px;
+  border-left: 4px solid #ffb74d;
+  padding: 12px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
 }
 .coupon-badge {
   background: white;
   border: 1px dashed #ffb74d;
-  padding: 3px 6px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-.btn-ocean {
-  background: linear-gradient(90deg,#009688,#00bfa5,#00897b);
-  border-radius: 12px;
-  color: white !important;
+  padding: 4px 8px;
+  border-radius: 10px;
   font-weight: 700;
-  transition: .25s;
+  color: #ff9800;
+}
+
+/* ---------- Ocean Button (same as product page) ---------- */
+.btn-ocean {
+  background: linear-gradient(90deg, #009688, #00bfa5, #00a08a);
+  background-size: 200% 200%;
+  color: white !important;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: 0.35s ease;
+  box-shadow: 0 6px 18px rgba(0, 150, 136, 0.28);
 }
 .btn-ocean:hover {
-  transform: translateY(-2px);
+  background-position: 100% 0;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 150, 136, 0.38);
 }
 </style>
 
-<h2 class="fw-bold mb-4 fade-in">🔥 Sản phẩm đang giảm giá</h2>
+<h2 class="fw-bold mb-4">🔥 Sản phẩm đang giảm giá</h2>
 
 <!-- ========================= COUPON MODAL ========================= -->
 @php 
@@ -129,11 +150,11 @@
 
       <div class="modal-body">
         <div class="coupon-desc mb-3">
-          <div>Nhập mã <span class="coupon-badge">DATCUTELOVE</span> để giảm <b>15%</b> đơn hàng.</div>
+          Nhập mã <span class="coupon-badge">DATCUTELOVE</span> để giảm <b>15%</b> đơn hàng.<br>
           <small class="text-muted">Mỗi tài khoản được sử dụng 1 lần.</small>
         </div>
 
-        <form method="POST" action="{{ route('coupon.save') }}" id="couponForm">
+        <form method="POST" action="{{ route('coupon.save') }}">
           @csrf
           <div class="input-group">
             <input name="code" value="datcutelove" class="form-control form-control-lg">
@@ -158,7 +179,6 @@
 <div class="col-6 col-md-4 col-lg-3 sale-appear sale-delay-{{ ($loop->index % 4) + 1 }}">
   <div class="sale-card">
 
-    <!-- IMAGE -->
     <div class="position-relative">
       <a href="{{ route('product.show', $p->id) }}">
         <img src="{{ file_exists(public_path($img)) ? asset($img).$ver : asset('assets/img/logo.png') }}" 
@@ -170,11 +190,10 @@
       @endif
     </div>
 
-    <!-- INFO -->
     <div class="p-3">
       <div class="fw-semibold mb-1 text-dark" style="min-height:44px">{{ $p->name }}</div>
 
-      <div class="d-flex align-items-baseline gap-2">
+      <div class="d-flex align-items-baseline gap-2 mb-1">
         <div class="sale-final">{{ number_format($p->final_price) }} đ</div>
         <div class="sale-original">{{ number_format($p->price) }} đ</div>
       </div>
@@ -183,16 +202,15 @@
         $avg = round((float)\App\Models\Review::where('product_id',$p->id)->avg('rating'),1);
         $cnt = \App\Models\Review::where('product_id',$p->id)->count();
         $sold = \DB::table('order_details as od')
-            ->join('orders as o','o.id','=','od.order_id')
-            ->where('od.product_id',$p->id)
-            ->where('o.status','completed')
-            ->sum('od.quantity');
+          ->join('orders as o','o.id','=','od.order_id')
+          ->where('od.product_id',$p->id)
+          ->where('o.status','completed')
+          ->sum('od.quantity');
         $rounded = (int)floor($avg + 0.5);
       @endphp
 
-      <!-- Rating + Sold -->
       @if($cnt>0 || $sold>0)
-      <div class="mt-1 small d-flex gap-2 align-items-center">
+      <div class="mt-2 small d-flex gap-2 align-items-center">
         @if($cnt>0)
           <span>
             @for($i=1;$i<=5;$i++)
@@ -201,12 +219,12 @@
             <span class="text-muted">{{ $avg }} ({{ $cnt }})</span>
           </span>
         @endif
-
         @if($sold>0)
           <span class="text-success"><i class="bi bi-bag-check"></i> {{ number_format($sold) }}</span>
         @endif
       </div>
       @endif
+
     </div>
 
     <a href="{{ route('product.show', $p->id) }}" class="stretched-link"></a>
@@ -218,21 +236,19 @@
 @endforelse
 </div>
 
-<!-- PAGINATION -->
 <div class="mt-4">{{ $products->links() }}</div>
 
 @include('layouts.footer')
 
-<!-- ========================= JS ========================= -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  /* APPEAR EFFECT */
+  /* appear */
   document.querySelectorAll(".sale-appear").forEach(el => {
-    setTimeout(() => el.classList.add("visible"), 150);
+    setTimeout(() => el.classList.add("visible"), 130);
   });
 
-  /* MODAL LOGIC */
+  /* modal logic */
   var uid = '{{ $uid }}';
   var role = '{{ $role }}';
   var applied = '{{ strtoupper($applied ?? "") }}';
@@ -247,7 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-
 });
 </script>
 

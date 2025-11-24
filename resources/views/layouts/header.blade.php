@@ -49,6 +49,10 @@
       color: #ffeb3b !important;
     }
 
+    .nav-item.dropdown .dropdown-toggle {
+      margin-left: -4px !important;
+    }
+
     /* SALE link */
     .sale-hot {
       color: #e11d48 !important;
@@ -189,9 +193,13 @@
           <!-- PRODUCTS DROPDOWN -->
           <li class="nav-item dropdown d-flex align-items-center">
 
-            <a class="nav-link" href="{{ route('products.index') }}">Sản phẩm</a>
-            <a class="nav-link dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></a>
+            <!-- NÚT ĐI TỚI TRANG TẤT CẢ SẢN PHẨM -->
+            <a class="nav-link" href="{{ route('products.index') }}">
+              Sản phẩm
+            </a>
 
+            <!-- NÚT MỞ DROPDOWN (CHỈ MŨI TÊN) -->
+            <a class="nav-link dropdown-toggle px-0 ms-n2" href="#" data-bs-toggle="dropdown"></a>
             <ul class="dropdown-menu p-3">
               <li>
                 <div class="nav-mega-grid">
@@ -232,11 +240,16 @@
               </li>
 
               <li><a class="dropdown-item" href="{{ route('products.index') }}">Tất cả sản phẩm</a></li>
-              <li><a class="dropdown-item text-danger" href="{{ route('products.sale') }}">
+              <li>
+                <a class="dropdown-item text-danger" href="{{ route('products.sale') }}">
                   <i class="bi bi-percent me-2"></i>Giảm giá
-                </a></li>
+                </a>
+              </li>
             </ul>
+
           </li>
+
+
 
           <!-- SALE -->
           <li class="nav-item">

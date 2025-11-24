@@ -17,17 +17,103 @@
    🔥 PREMIUM PRODUCT PAGE STYLING – AQUASHOP
    ============================================================ */
 
+/* ---------- PAGE TITLE ---------- */
+.page-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.page-title-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(0, 150, 136, 0.08);
+  color: #00897b;
+  font-weight: 600;
+}
+
 /* ---------- FILTER BOX ---------- */
 .filter-box {
-  background: linear-gradient(145deg, #f9fbff, #eef2f7);
-  border: 1px solid #e1e5eb;
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transition: .3s;
+  background: radial-gradient(circle at top left, #f1f7ff 0, #eef2f7 45%, #ffffff 100%);
+  border: 1px solid #e3e7ef;
+  padding: 14px 18px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(13, 71, 161, 0.06);
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.filter-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0% 0%, rgba(0, 188, 212, 0.09), transparent 55%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+.filter-box-inner {
+  position: relative;
+  z-index: 2;
 }
 .filter-box:hover {
-  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 32px rgba(13, 71, 161, 0.10);
+  transform: translateY(-2px);
+}
+
+/* ---------- FILTER INPUT PILL ---------- */
+.filter-pill {
+  position: relative;
+}
+.filter-pill-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #90a4ae;
+  z-index: 2;
+}
+.filter-pill .filter-input,
+.filter-pill .filter-select {
+  border-radius: 999px;
+  border: 1px solid #d5dde8;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding-left: 40px;
+  height: 44px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(145, 158, 171, 0.12);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.18s ease;
+}
+.filter-pill .filter-input::placeholder {
+  color: #b0bec5;
+  font-size: 13px;
+}
+.filter-pill .filter-input:focus,
+.filter-pill .filter-select:focus {
+  outline: none;
+  border-color: #00acc1;
+  box-shadow:
+    0 0 0 1px rgba(0, 172, 193, 0.15),
+    0 6px 18px rgba(0, 150, 136, 0.25);
+  background-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Button trong filter */
+.filter-actions .btn-ocean {
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+}
+
+/* Link xoá lọc */
+.filter-reset {
+  font-size: 12px;
 }
 
 /* ---------- CARD WRAPPER ---------- */
@@ -133,64 +219,115 @@
   transition: 0.35s ease;
   box-shadow: 0 6px 18px rgba(0, 150, 136, 0.28);
 }
-
 .btn-ocean:hover {
   background-position: 100% 0;
   transform: translateY(-3px);
   box-shadow: 0 10px 28px rgba(0, 150, 136, 0.38);
 }
-
 .btn-ocean:active {
   transform: scale(0.95);
 }
 
+/* Responsive tweak */
+@media (max-width: 575.98px) {
+  .filter-box {
+    padding: 12px 12px;
+  }
+}
 </style>
 
 
-<h2 class="fw-bold mb-4">
-  🛒 Khám phá sản phẩm AquaShop
-</h2>
-
+<div class="page-title-wrap">
+  <h2 class="fw-bold mb-0">🛒 Khám phá sản phẩm AquaShop</h2>
+  <span class="page-title-chip">Ưu đãi & sản phẩm mới</span>
+</div>
 
 <!-- ===================== FILTER ===================== -->
-<form class="row g-2 mb-4 filter-box" method="GET" action="{{ route('products.index') }}">
+<form class="filter-box mb-4" method="GET" action="{{ route('products.index') }}">
+  <div class="filter-box-inner">
+    <div class="row g-2 align-items-center">
 
-  <div class="col-lg-3 col-sm-6">
-    <input class="form-control" type="text" name="q" value="{{ $q }}" placeholder="🔍 Tìm tên sản phẩm...">
-  </div>
+      <div class="col-lg-3 col-sm-6">
+        <div class="filter-pill">
+          <i class="bi bi-search filter-pill-icon"></i>
+          <input
+            class="form-control filter-input"
+            type="text"
+            name="q"
+            value="{{ $q }}"
+            placeholder="Tìm tên sản phẩm, từ khóa..."
+          >
+        </div>
+      </div>
 
-  <div class="col-lg-2 col-sm-6">
-    <select class="form-select" name="category">
-      <option value="">Danh mục</option>
-      @foreach($categories as $c)
-        <option value="{{ $c->id }}" @if($category==$c->id) selected @endif>{{ $c->name }}</option>
-      @endforeach
-    </select>
-  </div>
+      <div class="col-lg-2 col-sm-6">
+        <div class="filter-pill">
+          <i class="bi bi-grid filter-pill-icon"></i>
+          <select class="form-select filter-select" name="category">
+            <option value="">Danh mục</option>
+            @foreach($categories as $c)
+              <option value="{{ $c->id }}" @if($category==$c->id) selected @endif>
+                {{ $c->name }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+      </div>
 
-  <div class="col-lg-2 col-sm-6">
-    <select class="form-select" name="brand">
-      <option value="">Thương hiệu</option>
-      @foreach($brands as $b)
-        <option value="{{ $b->id }}" @if($brand==$b->id) selected @endif>{{ $b->name }}</option>
-      @endforeach
-    </select>
-  </div>
+      <div class="col-lg-2 col-sm-6">
+        <div class="filter-pill">
+          <i class="bi bi-tags filter-pill-icon"></i>
+          <select class="form-select filter-select" name="brand">
+            <option value="">Thương hiệu</option>
+            @foreach($brands as $b)
+              <option value="{{ $b->id }}" @if($brand==$b->id) selected @endif>
+                {{ $b->name }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+      </div>
 
-  <div class="col-lg-2 col-sm-6">
-    <input class="form-control" type="number" step="1000" name="min_price" value="{{ $min }}" placeholder="Giá từ">
-  </div>
+      <div class="col-lg-2 col-sm-6">
+        <div class="filter-pill">
+          <i class="bi bi-cash-coin filter-pill-icon"></i>
+          <input
+            class="form-control filter-input"
+            type="number"
+            step="1000"
+            name="min_price"
+            value="{{ $min }}"
+            placeholder="Giá từ"
+          >
+        </div>
+      </div>
 
-  <div class="col-lg-2 col-sm-6">
-    <input class="form-control" type="number" step="1000" name="max_price" value="{{ $max }}" placeholder="Đến">
-  </div>
+      <div class="col-lg-2 col-sm-6">
+        <div class="filter-pill">
+          <i class="bi bi-cash-coin filter-pill-icon"></i>
+          <input
+            class="form-control filter-input"
+            type="number"
+            step="1000"
+            name="max_price"
+            value="{{ $max }}"
+            placeholder="Đến"
+          >
+        </div>
+      </div>
 
-  <div class="col-lg-1 col-sm-12 d-grid">
-    <button class="btn btn-ocean">Lọc</button>
-  </div>
+      <div class="col-lg-1 col-sm-12 filter-actions">
+        <button class="btn btn-ocean" type="submit">
+          Lọc
+        </button>
+      </div>
 
-  <div class="col-12 text-end mt-1">
-    <a class="small text-muted" href="{{ route('products.index') }}">Xóa lọc</a>
+      <div class="col-12 text-end mt-1">
+        <a class="small text-muted filter-reset" href="{{ route('products.index') }}">
+          Xóa lọc & xem tất cả
+        </a>
+      </div>
+    </div>
   </div>
 </form>
 
