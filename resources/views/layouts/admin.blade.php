@@ -52,6 +52,7 @@
       <a class="nav-link {{ request()->is('admin/orders*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}"><i class="bi bi-receipt me-2"></i>Đơn hàng</a>
       <a class="nav-link {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('admin.news.index') }}"><i class="bi bi-megaphone me-2"></i>Tin tức</a>
       <a class="nav-link" href="{{ route('home') }}"><i class="bi bi-house me-2"></i>Về trang khách</a>
+      <a class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i>Người dùng</a>
     </nav>
   </aside>
 

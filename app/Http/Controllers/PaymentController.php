@@ -22,17 +22,33 @@ class PaymentController extends Controller
         $momoOrderId = $order->id . '-' . now()->timestamp;
         $orderInfo = 'Thanh toan don hang #'.$order->id;
         $extra = json_encode(['order_id' => $order->id]);
-        $momoRes = $momo->createPayment($momoOrderId, (int)$order->total, $orderInfo, $extra);
+        $amount = (int) $order->total;
+        if ($amount < 1000) {
+            return redirect()->route('order.thankyou', $order->id)
+                ->with('error', 'MoMo chỉ hỗ trợ đơn hàng từ 1.000đ trở lên. Vui lòng thêm sản phẩm hoặc chọn phương thức khác.');
+        }
+        $momoRes = $momo->createPayment($momoOrderId, $amount, $orderInfo, $extra);
 
         // Lưu requestId/transactionId để đối soát
         $payment->transaction_id = $momoRes['requestId'] ?? $momoOrderId;
         $payment->save();
 
+        $payUrl = $momoRes['payUrl'] ?? null;
+        $qrCodeUrl = $momoRes['qrCodeUrl'] ?? null;
+        $deeplink = "momo://app?action=payWithApp&phone=0332643954&amount={$amount}&comment=Thanh toan don {$order->id}";
+        $qrData = urlencode($payUrl ?? $deeplink);
+        if (!$qrCodeUrl) {
+            $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={$qrData}";
+        }
+        $transferContent = $order->customer_phone ?? $order->phone ?? ('ORDER'.$order->id);
+
         return view('payment_momo', [
             'order'       => $order,
             'payment'     => $payment,
-            'payUrl'      => $momoRes['payUrl'],
-            'qrCodeUrl'   => $momoRes['qrCodeUrl'],
+            'payUrl'      => $payUrl ?? $deeplink,
+            'qrCodeUrl'   => $qrCodeUrl,
+            'transferContent' => $transferContent,
+            'momoDeepLink' => $deeplink,
             'expireAtTs'  => $momoRes['expire_at'],
         ]);
     }
@@ -111,6 +127,6 @@ class PaymentController extends Controller
 
         return redirect()
             ->route('order.thankyou', $order->id)
-            ->with('success', 'Đã giả lập thanh toán MoMo thành công.');
+            ->with('success', 'Đã thanh toán MoMo thành công.');
     }
 }

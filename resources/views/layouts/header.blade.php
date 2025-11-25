@@ -22,6 +22,15 @@
       background: rgba(0, 123, 255, 0.85) !important;
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: visible;
+    }
+
+    .navbar-collapse {
+      overflow: visible;
+    }
+
+    .navbar-nav {
+      overflow: visible;
     }
 
     /* LOGO */
@@ -76,7 +85,7 @@
 
     /* SEARCH */
     .nav-search {
-      width: 260px;
+      width: 300px;
       border-radius: 40px;
       border: none;
       padding-left: 12px !important;
@@ -87,6 +96,117 @@
       border-radius: 40px 0 0 40px !important;
       background: #ffffffdd !important;
       border: none !important;
+    }
+
+    /* SEARCH FORM WRAPPER */
+    nav form[role="search"] {
+      position: relative;
+      width: auto;
+    }
+
+    nav form[role="search"] .input-group {
+      width: 100%;
+    }
+
+    /* SEARCH SUGGESTIONS DROPDOWN */
+    .search-suggest {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 1051;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .search-suggest-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 10px;
+      align-items: center;
+      text-decoration: none;
+      color: #1e2a35;
+      transition: background 0.12s, transform 0.12s;
+      border-radius: 6px;
+      margin: 2px 6px;
+    }
+
+    .search-suggest-item:hover {
+      background: #f8fafb;
+      transform: translateX(2px);
+    }
+
+    .search-suggest-img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #f5f5f5;
+      border: 1px solid #f0f0f0;
+    }
+
+    .search-suggest-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .search-suggest-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e2a35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .search-suggest-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #d32f2f;
+    }
+
+    .search-suggest-category {
+      display: inline-block;
+      font-size: 10px;
+      color: #666;
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      width: fit-content;
+      font-weight: 500;
+    }
+
+    .search-suggest-footer {
+      border-top: 1px solid #f0f0f0;
+      padding: 8px 12px;
+      text-align: center;
+      background: #fafafa;
+    }
+
+    .search-suggest-footer a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      transition: color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .search-suggest-footer a:hover {
+      color: #0056b3;
     }
 
     /* DROPDOWN */
@@ -159,37 +279,67 @@
       color: #fff;
       font-size: 14px;
       padding: 6px 0;
-      position: relative;
       overflow: hidden;
     }
 
     .news-ticker .ticker-inner {
       display: flex;
       align-items: center;
-      gap: 14px;
-      animation: ticker-scroll 22s linear infinite;
-      white-space: nowrap;
+      gap: 12px;
+      min-height: 32px;
     }
 
-    .news-ticker:hover .ticker-inner {
-      animation-play-state: paused;
+    .news-ticker .ticker-track {
+      overflow: hidden;
+      flex: 1;
     }
 
     .news-ticker .badge {
       background: #ffc107;
       color: #0d47a1;
       font-weight: 700;
+      font-size: 12px;
     }
 
     .news-ticker .ticker-item {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
+      min-width: 100%;
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .news-ticker .ticker-item.ticker-run {
+      animation: ticker-scroll 18s linear forwards;
+    }
+
+    .news-ticker .ticker-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .news-ticker .ticker-summary {
+      font-size: 14px;
+      opacity: 0.9;
     }
 
     @keyframes ticker-scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+      }
+      95% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -217,7 +367,7 @@
 
           <!-- DESKTOP SEARCH -->
           <li class="nav-item d-none d-lg-block me-2">
-            <form action="{{ route('products.index') }}" method="GET" class="d-flex">
+            <form action="{{ route('products.index') }}" method="GET" class="d-flex" role="search">
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <input class="form-control nav-search" type="search" name="q" placeholder="Tìm sản phẩm..."
@@ -349,24 +499,33 @@
   <!-- ================= NEWS TICKER ================= -->
   @php
     $tickerNews = \App\Models\News::published()->orderByDesc('published_at')->limit(5)->get();
+    $tickerData = $tickerNews->map(function($item){
+      $title = trim($item->title) ?: 'Tin mới từ AquaShop';
+      $text = strip_tags($item->content ?? '');
+      $text = trim($text);
+      if ($text === '') {
+        $text = $title;
+      } else {
+        $text = mb_substr($text, 0, 160);
+      }
+      return [
+        'title' => $title,
+        'text'  => $text,
+      ];
+    });
   @endphp
-  @if($tickerNews->count())
+  @if($tickerData->count())
   <div class="news-ticker">
     <div class="container">
+      @php $initial = $tickerData->first(); @endphp
       <div class="ticker-inner">
         <span class="badge text-uppercase"><i class="bi bi-megaphone-fill me-1"></i>Tin mới</span>
-        @foreach($tickerNews as $n)
-          <span class="ticker-item">
-            <i class="bi bi-dot"></i>
-            <span class="fw-semibold">{{ $n->title }}</span>
-          </span>
-        @endforeach
-        @foreach($tickerNews as $n)
-          <span class="ticker-item">
-            <i class="bi bi-dot"></i>
-            <span class="fw-semibold">{{ $n->title }}</span>
-          </span>
-        @endforeach
+        <div class="ticker-track" id="newsTicker" data-news='@json($tickerData)'>
+          <div class="ticker-item ticker-run">
+            <strong class="ticker-title">{{ $initial['title'] }}:</strong>
+            <span class="ticker-summary">{{ $initial['text'] }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -413,6 +572,33 @@
           }, 150);
         });
       });
+
+      // News ticker rotation
+      var tickerTrack = document.getElementById('newsTicker');
+      if (tickerTrack) {
+        try {
+          var items = JSON.parse(tickerTrack.dataset.news || '[]');
+          var itemEl = tickerTrack.querySelector('.ticker-item');
+          var titleEl = tickerTrack.querySelector('.ticker-title');
+          var summaryEl = tickerTrack.querySelector('.ticker-summary');
+          var idx = 0;
+
+          function showNext() {
+            if (!items.length) return;
+            idx = (idx + 1) % items.length;
+            var current = items[idx] || {};
+            if (titleEl) titleEl.textContent = (current.title ? current.title + ':' : '');
+            if (summaryEl) summaryEl.textContent = current.text || '';
+            itemEl.classList.remove('ticker-run');
+            void itemEl.offsetWidth; // reflow
+            itemEl.classList.add('ticker-run');
+          }
+
+          itemEl.addEventListener('animationend', showNext);
+        } catch (error) {
+          console.warn('ticker error', error);
+        }
+      }
 
       /* Theme toggle */
       var body = document.body;
@@ -518,11 +704,16 @@
           }
           list.innerHTML =
             items.map(it =>
-              `<a href="${origin}/product/${it.id}">
-            <i class="bi bi-box-seam me-2 text-primary"></i>${it.name}
-           </a>`
+              `<a href="${origin}/product/${it.id}" class="search-suggest-item">
+                <img src="${origin}/assets/img/products/${it.image}" alt="${it.name}" class="search-suggest-img">
+                <div class="search-suggest-info">
+                  <div class="search-suggest-name">${it.name}</div>
+                  <div class="search-suggest-price">${new Intl.NumberFormat('vi-VN').format(it.price)}₫</div>
+                  <span class="search-suggest-category">${it.category}</span>
+                </div>
+              </a>`
             ).join('') +
-            `<div class="footer"><a href="${origin}/products?q=${encodeURIComponent(input.value || '')}">Tìm "${input.value}"</a></div>`;
+            `<div class="search-suggest-footer"><a href="${origin}/products?q=${encodeURIComponent(input.value || '')}"><i class="bi bi-search me-1"></i>Xem tất cả kết quả</a></div>`;
           show();
         }
 
@@ -539,12 +730,16 @@
             ctrl = null;
           }
 
+          console.log('Fetching search for:', q);
           fetch(`${origin}/api/search/products?q=${encodeURIComponent(q)}`, {
               signal: ctrl?.signal
             })
             .then(r => r.json())
-            .then(d => render((d ?? []).slice(0, 8)))
-            .catch(() => {});
+            .then(d => {
+              console.log('Search results:', d);
+              render((d ?? []).slice(0, 8));
+            })
+            .catch(err => console.log('Search error:', err));
         }
 
         input.oninput = () => {

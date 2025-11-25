@@ -3,24 +3,38 @@
 @section('content')
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <div class="card shadow-sm">
-        <div class="card-body text-center">
-          <h4 class="mb-2">Thanh toán MoMo cho đơn #{{ $order->id }}</h4>
-          <p class="text-muted mb-3">Số tiền: <strong>{{ number_format($order->total) }} đ</strong></p>
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 border-end">
+              <div class="text-muted small mb-2">Thanh toán cho đơn #{{ $order->id }}</div>
+              <h4 class="fw-bold mb-3">Quét mã thanh toán</h4>
+              <p class="text-muted">Vui lòng mở ứng dụng MoMo và quét mã để hoàn tất thanh toán.</p>
 
-          @if($qrCodeUrl)
-            <img src="{{ $qrCodeUrl }}" alt="QR MoMo" class="img-fluid rounded mb-3" style="max-width: 260px;">
-          @endif
+              <ul class="list-unstyled mb-4">
+                <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>Số điện thoại: <strong>0332643954</strong></li>
+                <li class="mb-2"><i class="bi bi-chat-dots me-2 text-primary"></i>Nội dung: <strong>{{ $transferContent }}</strong></li>
+                <li class="mb-2"><i class="bi bi-cash-stack me-2 text-primary"></i>Số tiền: <strong class="text-danger">{{ number_format($order->total) }} đ</strong></li>
+              </ul>
 
-          <div class="d-flex flex-column gap-2 align-items-center">
-            @if($payUrl)
-              <a class="btn btn-primary" href="{{ $payUrl }}" target="_blank" rel="noreferrer">Mở ứng dụng MoMo</a>
-            @endif
-            <div id="momoCountdown" class="fw-bold text-danger"></div>
+              <div id="momoCountdown" class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2"></div>
+
+              @if($payUrl)
+              <a class="btn btn-primary mt-3" href="{{ $payUrl }}" target="_blank" rel="noreferrer">
+                <i class="bi bi-phone"></i> Mở ứng dụng MoMo
+              </a>
+              @endif
+            </div>
+
+            <div class="col-md-6 text-center">
+              <div class="border rounded-3 p-3 bg-light">
+                <div class="fw-semibold mb-2">MoMo QR</div>
+                <img src="{{ $qrCodeUrl }}" alt="MoMo QR" class="img-fluid rounded shadow-sm" style="max-width: 240px;">
+                <div class="text-muted small mt-2">Quét bằng app MoMo để thanh toán</div>
+              </div>
+            </div>
           </div>
-
-          <p class="mt-3 text-muted small">Quét mã bằng app MoMo hoặc bấm nút để chuyển tới MoMo.</p>
         </div>
       </div>
     </div>

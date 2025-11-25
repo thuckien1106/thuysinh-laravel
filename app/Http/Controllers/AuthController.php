@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -46,6 +47,13 @@ class AuthController extends Controller
                 try { $user->password = Hash::make($password); $user->save(); } catch (\Throwable $e) {}
             }
             if ($isValid) {
+                DB::table('customers')->updateOrInsert(
+                    ['email' => $user->email],
+                    [
+                        'full_name' => $user->name ?? $user->username,
+                        'email' => $user->email,
+                    ]
+                );
                 session(['admin' => $user]);
                 return $user->role === 'admin'
                     ? redirect()->route('admin.dashboard')->with('success', 'Đăng nhập thành công!')
@@ -93,4 +101,3 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Đã đăng xuất thành công.');
     }
 }
-

@@ -23,7 +23,6 @@ class NewsAdminController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateData($request);
-        $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         if (empty($data['published_at']) && $data['is_published']) {
             $data['published_at'] = now();
         }
@@ -39,7 +38,6 @@ class NewsAdminController extends Controller
     public function update(Request $request, News $news)
     {
         $data = $this->validateData($request, $news->id);
-        $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         if (empty($data['published_at']) && $data['is_published']) {
             $data['published_at'] = now();
         }
@@ -56,16 +54,22 @@ class NewsAdminController extends Controller
     protected function validateData(Request $request, $id = null): array
     {
         $idRule = $id ? ',' . $id : '';
-        return $request->validate([
-            'title'         => 'required|string|max:200',
-            'slug'          => 'nullable|string|max:220|unique:news,slug' . $idRule,
-            'summary'       => 'nullable|string',
-            'content'       => 'nullable|string',
-            'banner_image'  => 'nullable|string|max:255',
-            'is_published'  => 'sometimes|boolean',
-            'published_at'  => 'nullable|date',
-        ]) + [
-            'is_published' => $request->boolean('is_published'),
-        ];
+        $data = $request->validate([
+            'title'        => 'required|string|max:200',
+            'content'      => 'required|string',
+            'published_at' => 'nullable|date',
+            'is_published' => 'sometimes|boolean',
+        ]);
+
+        $data['slug'] = Str::slug($data['title']);
+        if ($id) {
+            $exists = News::where('slug', $data['slug'])->where('id', '!=', $id)->exists();
+            if ($exists) {
+                $data['slug'] .= '-' . Str::random(5);
+            }
+        }
+
+        $data['is_published'] = $request->boolean('is_published');
+        return $data;
     }
 }

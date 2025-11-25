@@ -73,16 +73,6 @@
     </div>
   @endif
 
-  @if($errors->any())
-    <div class="alert alert-danger rounded-3 mb-4">
-        <ul class="mb-0 ps-3">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-  @endif
-
   @php
     $items = $cart ?? [];
     $subtotal = $total ?? 0;
@@ -165,30 +155,6 @@
             </div>
         </div>
 
-        {{-- QR PAYMENTS (hi��n khi ch��n thanh toA�n online) --}}
-        <div id="qrPayBox" class="qr-pay mt-3">
-          <div class="alert alert-info py-2 px-3 mb-3 small">
-            Qu��t mA� thanh toA�n Online. S��� tiA�n: <strong>{{ number_format($grand) }} �`</strong>
-          </div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="qr-card text-center h-100">
-                <div class="fw-semibold mb-2">MoMo</div>
-                <img class="img-fluid rounded" alt="QR MoMo"
-                     src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMjAnIGhlaWdodD0nMjIwJz48cmVjdCB3aWR0aD0nMjIwJyBoZWlnaHQ9JzIyMCcgZmlsbD0nI2Y0ZDRmZicvPjxyZWN0IHg9JzE2JyB5PScxNicgd2lkdGg9JzE4OCcgaGVpZ2h0PScxODgnIHJ4PScxMicgZmlsbD0nd2hpdGUnLz48dGV4dCB4PScxMTAnIHk9JzExMCcgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsJyBmb250LXNpemU9JzI2JyBmaWxsPScjYjAwMDZkJz5Nb01vIFFSPC90ZXh0Pjwvc3ZnPg==">
-                <div class="small text-muted mt-2">N��i dung: T��n + S�� �`i���n tho���i</div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="qr-card text-center h-100">
-                <div class="fw-semibold mb-2">VNPAY</div>
-                <img class="img-fluid rounded" alt="QR VNPAY"
-                     src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMjAnIGhlaWdodD0nMjIwJz48cmVjdCB3aWR0aD0nMjIwJyBoZWlnaHQ9JzIyMCcgZmlsbD0nI2Q4ZjVmZicvPjxyZWN0IHg9JzE2JyB5PScxNicgd2lkdGg9JzE4OCcgaGVpZ2h0PScxODgnIHJ4PScxMicgZmlsbD0nd2hpdGUnLz48dGV4dCB4PScxMTAnIHk9JzExMCcgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsJyBmb250LXNpemU9JzI2JyBmaWxsPScjMDA2NmNjJz5WTlBBWTwvdGV4dD48L3N2Zz4=">
-                <div class="small text-muted mt-2">Qu��t mA� tr��n app VNPAY/Ng��n hA�ng</div>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </form>
     </div>
@@ -288,6 +254,26 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".fade-in").forEach(el => el.classList.add("visible"));
+  
+  // Logic ẩn hiện QR khi chọn payment method
+  const pmCod = document.getElementById('pm_cod');
+  const pmOnline = document.getElementById('pm_online');
+  const qrBox = document.getElementById('qrPayBox');
+
+  function toggleQr() {
+    if (pmOnline.checked) {
+      qrBox.classList.add('show');
+    } else {
+      qrBox.classList.remove('show');
+    }
+  }
+
+  if(pmCod && pmOnline) {
+    pmCod.addEventListener('change', toggleQr);
+    pmOnline.addEventListener('change', toggleQr);
+    // Init status
+    toggleQr();
+  }
 });
 </script>
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\Shipment;
 
 class OrderAdminController extends Controller
@@ -87,6 +88,14 @@ class OrderAdminController extends Controller
     {
         $order = Order::findOrFail($id);
         $items = OrderDetail::where('order_id', $order->id)->get();
+        $productMap = Product::whereIn('id', $items->pluck('product_id'))
+            ->get()->keyBy('id');
+        $items->transform(function ($it) use ($productMap) {
+            $prod = $productMap->get($it->product_id);
+            $it->product_name = $prod->name ?? ('#'.$it->product_id);
+            $it->product_image = $prod->image ?? 'default.png';
+            return $it;
+        });
         $payment = Payment::where('order_id', $order->id)->orderByDesc('id')->first();
         $shipment = Shipment::where('order_id', $order->id)->orderByDesc('id')->first();
         return view('admin.orders.show', compact('order','items','payment','shipment'));

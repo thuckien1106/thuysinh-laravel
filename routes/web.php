@@ -145,6 +145,14 @@ Route::prefix('admin')->middleware('admin.role')->group(function () {
     Route::get('/categories/{id}/edit', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'edit'])->name('admin.categories.edit');
     Route::put('/categories/{id}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'update'])->name('admin.categories.update');
     Route::delete('/categories/{id}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'destroy'])->name('admin.categories.destroy');
+
+    // Users management
+    Route::get('/users', [\App\Http\Controllers\Admin\UserAdminController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/create', [\App\Http\Controllers\Admin\UserAdminController::class, 'create'])->name('admin.users.create');
+    Route::post('/users', [\App\Http\Controllers\Admin\UserAdminController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit', [\App\Http\Controllers\Admin\UserAdminController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}', [\App\Http\Controllers\Admin\UserAdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserAdminController::class, 'destroy'])->name('admin.users.destroy');
 });
 
 

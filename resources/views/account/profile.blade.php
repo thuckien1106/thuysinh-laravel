@@ -3,197 +3,301 @@
 @section('content')
 
 <style>
-/* ======================== PREMIUM ACCOUNT PAGE =========================== */
-
-/* Fade-in */
-.fade-appear {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all .6s ease;
-}
-.fade-appear.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* ======================== MODERN PROFILE UI =========================== */
+:root {
+    --primary-color: #009688;
+    --primary-light: #e0f2f1;
+    --text-dark: #344767;
+    --text-muted: #7b809a;
+    --input-bg: #f8f9fa;
+    --border-color: #e9ecef;
 }
 
-/* Section box */
-.section-box {
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 28px;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-  border: 1px solid rgba(0,0,0,.05);
-  margin-bottom: 25px;
+body {
+    background-color: #f3f4f6;
 }
 
-/* Labels */
-.form-label {
-  font-weight: 600;
-  color: #495057;
+/* Container */
+.profile-container {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 15px;
+}
+
+/* Animations */
+.fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Cards */
+.card-modern {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: none;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.card-header-modern {
+    background: linear-gradient(to right, #ffffff, #f8f9fa);
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-title i {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.card-body-modern {
+    padding: 25px;
 }
 
 /* Inputs */
-.form-control,
-.form-select {
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
-  border: 1px solid #d7dce3;
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #00bfa5;
-  box-shadow: 0 0 0 3px rgba(0,150,136,.25);
+.input-group-text {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    color: var(--text-muted);
+    border-radius: 10px 0 0 10px;
 }
 
-/* Title */
-.section-title {
-  font-size: 22px;
-  font-weight: 800;
-  background: linear-gradient(90deg,#009688,#00bfa5,#00897b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #495057;
+    font-size: 0.95rem;
+    transition: all 0.2s;
 }
 
-/* Alert custom */
-.alert-premium {
-  background: #e8f7ff;
-  border-left: 4px solid #0d6efd;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 15px;
+.input-group .form-control {
+    border-left: none;
+    border-radius: 0 10px 10px 0;
 }
 
-.alert-error {
-  background: #fdecec !important;
-  border-left: 4px solid #dc3545;
-  color: #c62828;
+.form-control:focus, .form-select:focus {
+    background-color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.15);
 }
 
-/* Button */
-.btn-ocean {
-  background: linear-gradient(90deg,#009688,#00bfa5);
-  color: #fff !important;
-  font-weight: 600;
-  border-radius: 14px;
-  padding: 10px 26px;
-  transition: .25s;
+/* Alert */
+.alert-modern {
+    border-radius: 12px;
+    background-color: #fff3cd;
+    border: 1px solid #ffecb5;
+    color: #664d03;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
-.btn-ocean:hover {
-  transform: translateY(-2px);
-  color: #fff !important;
+.alert-modern i {
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+/* Buttons */
+.btn-save {
+    background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 6px rgba(0, 150, 136, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 150, 136, 0.3);
+    color: white;
+}
+
+@media (min-width: 768px) {
+    .btn-save { width: auto; }
 }
 </style>
 
+<div class="profile-container fade-up">
 
-<div class="fade-appear">
+    <div class="mb-4">
+        <h2 class="fw-bold text-dark">Hồ sơ của tôi</h2>
+        <p class="text-muted">Quản lý thông tin hồ sơ và địa chỉ nhận hàng của bạn.</p>
+    </div>
 
-  <div class="section-box">
-    <h4 class="section-title mb-3">Thông tin tài khoản & địa chỉ nhận hàng</h4>
-
-    {{-- ERROR --}}
-    @if($errors->any())
-      <div class="alert-premium alert-error mb-3">
-        {{ $errors->first() }}
-      </div>
-    @endif
-
-    {{-- Checkout notice --}}
+    {{-- Alert Notice --}}
     @if(request('from')==='checkout')
-      <div class="alert-premium mb-3">
-        Vui lòng điền đầy đủ thông tin để tiếp tục thanh toán.
-      </div>
+    <div class="alert-modern shadow-sm">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <strong>Lưu ý:</strong> Vui lòng cập nhật đầy đủ thông tin bên dưới để tiến hành thanh toán.
+        </div>
+    </div>
     @endif
 
     <form method="POST" action="{{ route('account.profile.save') }}">
-      @csrf
+        @csrf
+        @if(request('from')==='checkout')
+            <input type="hidden" name="from" value="checkout">
+        @endif
 
-      @if(request('from')==='checkout')
-        <input type="hidden" name="from" value="checkout">
-      @endif
+        <div class="row g-4">
+            
+            <div class="col-lg-12">
+                <div class="card-modern">
+                    <div class="card-header-modern">
+                        <h5 class="card-title"><i class="bi bi-person-vcard"></i> Thông tin cá nhân</h5>
+                    </div>
+                    <div class="card-body-modern">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Họ và tên @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control"
+                                        name="full_name"
+                                        value="{{ old('full_name', $customer->full_name ?? '') }}"
+                                        placeholder="Nhập họ tên của bạn"
+                                        @if(request('from')==='checkout') required @endif>
+                                </div>
+                            </div>
 
-      <!-- ==================== PERSONAL INFO ==================== -->
-      <h5 class="fw-bold mt-2 mb-3"><i class="bi bi-person-circle me-2 text-primary"></i>Thông tin cá nhân</h5>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Họ tên @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
-          <input type="text" class="form-control"
-            name="full_name"
-            value="{{ old('full_name', $customer->full_name ?? '') }}"
-            placeholder="Nguyễn Văn A"
-            @if(request('from')==='checkout') required @endif>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="text" class="form-control"
+                                        name="phone"
+                                        value="{{ old('phone', $customer->phone ?? '') }}"
+                                        placeholder="Ví dụ: 0901234567"
+                                        @if(request('from')==='checkout') required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email đăng nhập <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control bg-light"
+                                        name="email"
+                                        value="{{ old('email', $user->email ?? '') }}"
+                                        readonly required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày sinh</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" class="form-control"
+                                        name="birthdate"
+                                        value="{{ old('birthdate', $customer->birthday ?? '') }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="card-modern">
+                    <div class="card-header-modern">
+                        <h5 class="card-title"><i class="bi bi-geo-alt"></i> Địa chỉ nhận hàng</h5>
+                    </div>
+                    <div class="card-body-modern">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Địa chỉ chi tiết @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-house-door"></i></span>
+                                    <input type="text" class="form-control"
+                                        name="address_line"
+                                        value="{{ old('address_line', $address->address_line ?? ($customer->address ?? '')) }}"
+                                        placeholder="Số nhà, tên đường, tòa nhà..."
+                                        @if(request('from')==='checkout') required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Tỉnh / Thành phố</label>
+                                <select class="form-select" id="provinceSelect" name="province"
+                                    data-selected="{{ old('province', $address->province ?? '') }}">
+                                    <option value="">Chọn Tỉnh/Thành</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Quận / Huyện</label>
+                                <select class="form-select" id="districtSelect" name="district"
+                                    data-selected="{{ old('district', $address->district ?? '') }}">
+                                    <option value="">Chọn Quận/Huyện</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Phường / Xã</label>
+                                <select class="form-select" id="wardSelect" name="ward"
+                                    data-selected="{{ old('ward', $address->ward ?? '') }}">
+                                    <option value="">Chọn Phường/Xã</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Số điện thoại @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
-          <input type="text" class="form-control"
-            name="phone"
-            value="{{ old('phone', $customer->phone ?? '') }}"
-            placeholder="090..."
-            @if(request('from')==='checkout') required @endif>
+        <div class="d-flex justify-content-end mt-2">
+            <button class="btn btn-save">
+                <i class="bi bi-check2-circle me-2"></i> Lưu thay đổi
+            </button>
         </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Email <span class="text-danger">*</span></label>
-          <input type="email" class="form-control"
-            name="email"
-            value="{{ old('email', $user->email ?? '') }}"
-            required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Ngày sinh</label>
-          <input type="date" class="form-control"
-            name="birthdate"
-            value="{{ old('birthdate', $customer->birthday ?? '') }}">
-        </div>
-      </div>
-
-      <hr class="my-4">
-
-      <!-- ==================== SHIPPING ADDRESS ==================== -->
-      <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Địa chỉ nhận hàng</h5>
-      <div class="row g-3">
-
-        <div class="col-md-12">
-          <label class="form-label">Địa chỉ chi tiết @if(request('from')==='checkout')<span class="text-danger">*</span>@endif</label>
-          <input type="text" class="form-control"
-            name="address_line"
-            value="{{ old('address_line', $address->address_line ?? ($customer->address ?? '')) }}"
-            placeholder="Số nhà, đường..."
-            @if(request('from')==='checkout') required @endif>
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Tỉnh/Thành</label>
-          <select class="form-select" id="provinceSelect" name="province"
-            data-selected="{{ old('province', $address->province ?? '') }}"></select>
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Quận/Huyện</label>
-          <select class="form-select" id="districtSelect" name="district"
-            data-selected="{{ old('district', $address->district ?? '') }}"></select>
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Phường/Xã</label>
-          <select class="form-select" id="wardSelect" name="ward"
-            data-selected="{{ old('ward', $address->ward ?? '') }}"></select>
-        </div>
-
-      </div>
-
-      <button class="btn btn-ocean mt-4">Lưu thông tin</button>
 
     </form>
-  </div>
-
 </div>
 
-
-<!-- ===================== JS: LOCATION PICKER ===================== -->
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
   const P = document.getElementById('provinceSelect');
@@ -210,7 +314,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   try {
     let data;
-
     // ưu tiên API public
     try {
       const res = await fetch('https://provinces.open-api.vn/api/?depth=3');
@@ -258,13 +361,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   } catch(e){}
 });
-</script>
 
-
-<script>
 // fade in
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".fade-appear").forEach(el => {
+  document.querySelectorAll(".fade-up").forEach(el => {
     setTimeout(() => { el.classList.add("visible"); }, 150);
   });
 });

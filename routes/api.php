@@ -27,9 +27,20 @@ Route::get('/products/{product}', [ProductApiController::class, 'show']);
 // Live search products by name (public)
 Route::get('/search/products', function (Illuminate\Http\Request $r) {
     $q = trim((string) $r->query('q',''));
-    return \App\Models\Product::select('id','name')
+    $products = \App\Models\Product::select('id','name','price','image','category_id')
+        ->with('category:id,name')
         ->when($q !== '', fn($qr)=>$qr->where('name','like', "%$q%"))
-        ->orderBy('name')->limit(10)->get();
+        ->orderBy('name')
+        ->limit(8)
+        ->get();
+    
+    return $products->map(fn($p) => [
+        'id' => $p->id,
+        'name' => $p->name,
+        'price' => (int)$p->price,
+        'image' => $p->image ?? 'default.png',
+        'category' => $p->category?->name ?? 'Khác'
+    ])->values();
 });
 
 // Discounts API (public read)

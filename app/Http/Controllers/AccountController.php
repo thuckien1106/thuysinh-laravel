@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
+    /**
+     * Hiển thị trang hồ sơ cá nhân.
+     */
     public function profile()
     {
         $user = session('admin');
-        // LÃ¡ÂºÂ¥y bÃ¡ÂºÂ£n ghi customers gÃ¡ÂºÂ¯n vÃ¡Â»â€ºi email user (Ã„â€˜Ã†Â¡n giÃ¡ÂºÂ£n vÃƒÂ  hiÃ¡Â»â€¡u quÃ¡ÂºÂ£)
+        
+        // Lấy bản ghi trong bảng customers gắn với email của user (Logic đơn giản và hiệu quả)
         $customer = DB::table('customers')->where('email', $user->email)->first();
-        // Ã„ÂÃ¡Â»â€¹a chÃ¡Â»â€° mÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh liÃƒÂªn kÃ¡ÂºÂ¿t theo customers (theo DB)
+        
+        // Lấy địa chỉ mặc định liên kết theo customers (dựa trên DB)
         $address = null;
         if ($customer) {
             $address = DB::table('addresses')
@@ -21,34 +26,53 @@ class AccountController extends Controller
                 ->where('is_default', 1)
                 ->first();
         }
-        return view('account.profile', compact('user','customer','address'));
+        
+        return view('account.profile', compact('user', 'customer', 'address'));
     }
 
+    /**
+     * Lưu cập nhật thông tin hồ sơ (bao gồm cả update từ trang Checkout).
+     */
     public function saveProfile(Request $request)
     {
         $user = session('admin');
         $fromCheckout = $request->input('from') === 'checkout';
+
+        // Validate dữ liệu đầu vào
         $rules = [
-            'full_name'    => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
-            'phone'        => ($fromCheckout ? 'required' : 'nullable').'|string|max:30',
-            'email'        => 'required|email|max:120|unique:users,email,'.$user->id,
+            'full_name'    => ($fromCheckout ? 'required' : 'nullable') . '|string|max:120',
+            'phone'        => ($fromCheckout ? 'required' : 'nullable') . '|string|max:30',
+            'email'        => 'required|email|max:120|unique:users,email,' . $user->id,
             'birthdate'    => 'nullable|date',
-            // Address fields
-            'address_line' => ($fromCheckout ? 'required' : 'nullable').'|string|max:255',
-            'ward'         => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
-            'district'     => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
-            'province'     => ($fromCheckout ? 'required' : 'nullable').'|string|max:120',
+            // Các trường địa chỉ
+            'address_line' => ($fromCheckout ? 'required' : 'nullable') . '|string|max:255',
+            'ward'         => ($fromCheckout ? 'required' : 'nullable') . '|string|max:120',
+            'district'     => ($fromCheckout ? 'required' : 'nullable') . '|string|max:120',
+            'province'     => ($fromCheckout ? 'required' : 'nullable') . '|string|max:120',
             'from'         => 'nullable|in:checkout'
         ];
-        $data = $request->validate($rules);
 
-        // LÃ†Â°u thÃƒÂ´ng tin ngÃ†Â°Ã¡Â»Âi dÃƒÂ¹ng (nÃ¡ÂºÂ¿u cÃƒÂ³ cÃ¡Â»â„¢t)
-        // CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t email vÃ¡Â»Â bÃ¡ÂºÂ£ng users Ã„â€˜Ã¡Â»Æ’ Ã„â€˜Ã¡Â»â€œng bÃ¡Â»â„¢ Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p
-        User::where('id',$user->id)->update(['email'=>$data['email']]);
+        $messages = [
+            'full_name.required'    => 'Vui lòng nhập họ và tên.',
+            'phone.required'        => 'Vui lòng nhập số điện thoại.',
+            'address_line.required' => 'Vui lòng nhập địa chỉ chi tiết.',
+            'email.unique'          => 'Email này đã được sử dụng bởi tài khoản khác.',
+        ];
 
-        // Upsert vÃƒÂ o bÃ¡ÂºÂ£ng customers dÃ¡Â»Â±a theo email
-        // LÃ¡ÂºÂ¥y Ã„â€˜Ã¡Â»â€¹a chÃ¡Â»â€° mÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh theo customers nÃ¡ÂºÂ¿u cÃƒÂ³
-        $existingCustomer = DB::table('customers')->where('email',$data['email'])->first();
+        $data = $request->validate($rules, $messages);
+
+        // 1. Cập nhật email, name, username vào bảng users để đồng bộ đăng nhập
+        $username = explode('@', $data['email'])[0];
+        User::where('id', $user->id)->update([
+            'email' => $data['email'],
+            'name' => $data['full_name'] ?? $user->name,
+            'username' => $username,
+        ]);
+
+        // 2. Xử lý bảng Customers (Upsert dựa theo email)
+        $existingCustomer = DB::table('customers')->where('email', $data['email'])->first();
+        
+        // Giữ lại địa chỉ cũ nếu người dùng không nhập địa chỉ mới trong lần cập nhật này
         $defaultAddress = null;
         if ($existingCustomer) {
             $defaultAddress = DB::table('addresses')
@@ -57,105 +81,115 @@ class AccountController extends Controller
                 ->value('address_line');
         }
 
-        $fallbackName = $data['full_name'] ?? ($existingCustomer->full_name ?? ($user->username ?? 'KhÃƒÂ¡ch hÃƒÂ ng'));
+        $fallbackName = $data['full_name'] ?? ($existingCustomer->full_name ?? ($user->username ?? 'Khách hàng'));
+        
         $customerData = [
             'full_name' => $fallbackName,
-            'phone' => $data['phone'] ?? null,
-            'birthday' => $data['birthdate'] ?? null,
-            'address' => $defaultAddress,
-            'email' => $data['email'],
+            'phone'     => $data['phone'] ?? null,
+            'birthday'  => $data['birthdate'] ?? null,
+            'address'   => $defaultAddress, // Tạm thời giữ địa chỉ cũ
+            'email'     => $data['email'],
         ];
-        $existing = $existingCustomer;
-        if ($existing) {
-            DB::table('customers')->where('id',$existing->id)->update($customerData);
+
+        if ($existingCustomer) {
+            DB::table('customers')->where('id', $existingCustomer->id)->update($customerData);
+            $customerId = $existingCustomer->id;
         } else {
-            DB::table('customers')->insert($customerData);
-            $existing = DB::table('customers')->where('email',$data['email'])->first();
+            $customerId = DB::table('customers')->insertGetId($customerData);
         }
 
-        // If user provided address, set/update default shipping address and mirror to customers.address
+        // 3. Xử lý Địa chỉ: Nếu người dùng nhập địa chỉ, set làm mặc định
         if (!empty($data['address_line'])) {
-            // Ensure customer row
-            $cust = $existing ?: DB::table('customers')->where('email', $data['email'])->first();
-            if (!$cust) {
-                DB::table('customers')->insert([
-                    'full_name' => $fallbackName,
-                    'phone'     => $data['phone'] ?? null,
-                    'address'   => $data['address_line'],
-                    'email'     => $data['email'],
-                ]);
-                $cust = DB::table('customers')->where('email', $data['email'])->first();
-            }
-
-            DB::table('addresses')->where('customer_id',$cust->id)->update(['is_default'=>0]);
+            // Bỏ cờ mặc định của các địa chỉ cũ
+            DB::table('addresses')->where('customer_id', $customerId)->update(['is_default' => 0]);
+            
+            // Cập nhật hoặc thêm mới địa chỉ mặc định
             DB::table('addresses')->updateOrInsert(
-                ['customer_id'=>$cust->id, 'is_default'=>1],
                 [
-                    'customer_id' => $cust->id,
-                    'full_name'   => $data['full_name'] ?? $fallbackName,
-                    'phone'       => $data['phone'] ?? null,
-                    'address_line'=> $data['address_line'],
-                    'ward'        => $data['ward'] ?? null,
-                    'district'    => $data['district'] ?? null,
-                    'province'    => $data['province'] ?? null,
-                    'is_default'  => 1,
+                    'customer_id' => $customerId,
+                    'address_line' => $data['address_line'] // Dùng địa chỉ làm key để tránh trùng lặp
+                ],
+                [
+                    'customer_id'  => $customerId,
+                    'full_name'    => $data['full_name'] ?? $fallbackName,
+                    'phone'        => $data['phone'] ?? null,
+                    'address_line' => $data['address_line'],
+                    'ward'         => $data['ward'] ?? null,
+                    'district'     => $data['district'] ?? null,
+                    'province'     => $data['province'] ?? null,
+                    'is_default'   => 1,
                 ]
             );
 
-            DB::table('customers')->where('id',$cust->id)->update([
+            // Đồng bộ cột address ngắn gọn vào bảng customers
+            DB::table('customers')->where('id', $customerId)->update([
                 'address' => $data['address_line'],
             ]);
         }
 
-        // CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t session
-        $user = User::find($user->id);
-        session(['admin'=>$user]);
+        // 4. Cập nhật lại session user
+        $userFresh = User::find($user->id);
+        session(['admin' => $userFresh]);
 
         if ($fromCheckout) {
-            return redirect()->route('checkout')->with('success','Đã lưu thông tin. Tiếp tục thanh toán.');
+            return redirect()->route('checkout')
+                ->with('success', 'Đã lưu thông tin giao hàng. Mời bạn tiếp tục thanh toán.');
         }
-        return back()->with('success','Đã lưu thông tin tài khoản.');
+
+        return back()->with('success', 'Đã cập nhật hồ sơ thành công.');
     }
 
+    /**
+     * Lưu địa chỉ mới (thường dùng cho popup hoặc form thêm địa chỉ phụ).
+     */
     public function saveAddress(Request $request)
     {
         $user = session('admin');
+        
         $data = $request->validate([
-            'full_name' => 'required|string|max:120',
-            'phone' => 'required|string|max:30',
+            'full_name'    => 'required|string|max:120',
+            'phone'        => 'required|string|max:30',
             'address_line' => 'required|string|max:255',
-            'ward' => 'nullable|string|max:120',
-            'district' => 'nullable|string|max:120',
-            'province' => 'nullable|string|max:120',
+            'ward'         => 'nullable|string|max:120',
+            'district'     => 'nullable|string|max:120',
+            'province'     => 'nullable|string|max:120',
+        ], [
+            'full_name.required'    => 'Vui lòng nhập họ tên người nhận.',
+            'phone.required'        => 'Vui lòng nhập số điện thoại.',
+            'address_line.required' => 'Vui lòng nhập địa chỉ.',
         ]);
 
-        // BÃ¡ÂºÂ£o Ã„â€˜Ã¡ÂºÂ£m cÃƒÂ³ bÃ¡ÂºÂ£n ghi customers dÃ¡Â»Â±a theo email Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p
+        // Đảm bảo có bản ghi customers dựa theo email đăng nhập
         $cust = DB::table('customers')->where('email', $user->email)->first();
         if (!$cust) {
-            DB::table('customers')->insert([
+            $custId = DB::table('customers')->insertGetId([
                 'full_name' => $data['full_name'],
-                'phone'    => $data['phone'],
-                'address'  => $data['address_line'],
-                'email'    => $user->email,
+                'phone'     => $data['phone'],
+                'address'   => $data['address_line'],
+                'email'     => $user->email,
             ]);
-            $cust = DB::table('customers')->where('email', $user->email)->first();
+            $cust = DB::table('customers')->where('id', $custId)->first();
         }
 
-        // Ã„ÂÃ¡ÂºÂ·t mÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh 1 Ã„â€˜Ã¡Â»â€¹a chÃ¡Â»â€° theo customer_id
-        DB::table('addresses')->where('customer_id',$cust->id)->update(['is_default'=>0]);
+        // Đặt địa chỉ mới này làm mặc định -> Reset các cái cũ về 0
+        DB::table('addresses')->where('customer_id', $cust->id)->update(['is_default' => 0]);
+        
+        // Thêm/Cập nhật địa chỉ mới và set is_default = 1
         DB::table('addresses')->updateOrInsert(
-            ['customer_id'=>$cust->id, 'is_default'=>1],
-            array_merge($data, ['customer_id'=>$cust->id, 'is_default'=>1])
+            [
+                'customer_id'  => $cust->id, 
+                'address_line' => $data['address_line']
+            ],
+            array_merge($data, ['customer_id' => $cust->id, 'is_default' => 1])
         );
 
-        // Ã„ÂÃ¡Â»â€œng bÃ¡Â»â„¢ Ã„â€˜Ã¡Â»â€¹a chÃ¡Â»â€°/name/phone vÃƒÂ o customers
-        DB::table('customers')->where('id',$cust->id)->update([
+        // Đồng bộ thông tin liên lạc chính vào bảng customers
+        DB::table('customers')->where('id', $cust->id)->update([
             'full_name' => $data['full_name'],
-            'phone' => $data['phone'],
-            'address' => $data['address_line'],
+            'phone'     => $data['phone'],
+            'address'   => $data['address_line'],
         ]);
 
-        return back()->with('success','Đã lưu địa chỉ mặc định.');
+        return back()->with('success', 'Đã lưu địa chỉ mặc định thành công.');
     }
 }
-

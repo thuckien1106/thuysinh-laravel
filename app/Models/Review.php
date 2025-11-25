@@ -8,7 +8,10 @@ class Review extends Model
 {
     public $timestamps = false;
     protected $fillable = [
-        'product_id','user_id','rating','content','created_at'
+        'product_id','user_id','rating','content','created_at','order_id'
+    ];
+    protected $casts = [
+        'created_at' => 'datetime',
     ];
 
     public function product()
@@ -21,4 +24,3 @@ class Review extends Model
         return $this->belongsTo(User::class);
     }
 }
-
