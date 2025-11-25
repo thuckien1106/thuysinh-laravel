@@ -50,6 +50,7 @@
       <a class="nav-link {{ request()->is('admin/categories*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}"><i class="bi bi-grid-3x3-gap me-2"></i>Danh mục</a>
       <a class="nav-link {{ request()->is('admin/discounts*') ? 'active' : '' }}" href="{{ route('admin.discounts.index') }}"><i class="bi bi-percent me-2"></i>Giảm giá</a>
       <a class="nav-link {{ request()->is('admin/orders*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}"><i class="bi bi-receipt me-2"></i>Đơn hàng</a>
+      <a class="nav-link {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('admin.news.index') }}"><i class="bi bi-megaphone me-2"></i>Tin tức</a>
       <a class="nav-link" href="{{ route('home') }}"><i class="bi bi-house me-2"></i>Về trang khách</a>
     </nav>
   </aside>

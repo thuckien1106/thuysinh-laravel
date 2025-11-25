@@ -288,16 +288,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".fade-in").forEach(el => el.classList.add("visible"));
-
-  const qrBox = document.getElementById('qrPayBox');
-  const online = document.getElementById('pm_online');
-  const cod = document.getElementById('pm_cod');
-  const toggleQr = () => {
-    if (!qrBox) return;
-    qrBox.classList.toggle('show', online && online.checked);
-  };
-  [online, cod].forEach(el => el && el.addEventListener('change', toggleQr));
-  toggleQr();
 });
 </script>
 

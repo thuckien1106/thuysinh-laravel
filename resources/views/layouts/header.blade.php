@@ -152,6 +152,45 @@
       transform: translateY(-2px) scale(1.05);
       color: #ffeb3b;
     }
+
+    /* NEWS TICKER */
+    .news-ticker {
+      background: linear-gradient(90deg, #0d47a1, #1565c0);
+      color: #fff;
+      font-size: 14px;
+      padding: 6px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-ticker .ticker-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      animation: ticker-scroll 22s linear infinite;
+      white-space: nowrap;
+    }
+
+    .news-ticker:hover .ticker-inner {
+      animation-play-state: paused;
+    }
+
+    .news-ticker .badge {
+      background: #ffc107;
+      color: #0d47a1;
+      font-weight: 700;
+    }
+
+    .news-ticker .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
   </style>
 </head>
 
@@ -306,6 +345,32 @@
       </div>
     </div>
   </nav>
+
+  <!-- ================= NEWS TICKER ================= -->
+  @php
+    $tickerNews = \App\Models\News::published()->orderByDesc('published_at')->limit(5)->get();
+  @endphp
+  @if($tickerNews->count())
+  <div class="news-ticker">
+    <div class="container">
+      <div class="ticker-inner">
+        <span class="badge text-uppercase"><i class="bi bi-megaphone-fill me-1"></i>Tin mới</span>
+        @foreach($tickerNews as $n)
+          <span class="ticker-item">
+            <i class="bi bi-dot"></i>
+            <span class="fw-semibold">{{ $n->title }}</span>
+          </span>
+        @endforeach
+        @foreach($tickerNews as $n)
+          <span class="ticker-item">
+            <i class="bi bi-dot"></i>
+            <span class="fw-semibold">{{ $n->title }}</span>
+          </span>
+        @endforeach
+      </div>
+    </div>
+  </div>
+  @endif
 
   <!-- ================= MAIN CONTENT WRAPPER ================= -->
   <main class="container py-4">

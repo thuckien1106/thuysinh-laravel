@@ -12,6 +12,12 @@ use App\Http\Controllers\ChatbotController;
 Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])
     ->name('chatbot.ask');
 
+// MoMo payment
+Route::get('/payment/momo/{order}', [\App\Http\Controllers\PaymentController::class, 'start'])->name('payment.momo.start');
+Route::get('/payment/momo/mock/{order}', [\App\Http\Controllers\PaymentController::class, 'mock'])->name('payment.momo.mock');
+Route::get('/payment/momo/return', [\App\Http\Controllers\PaymentController::class, 'return'])->name('payment.momo.return');
+Route::post('/payment/momo/ipn', [\App\Http\Controllers\PaymentController::class, 'ipn'])->name('payment.momo.ipn');
+
 // Trang chÃ­nh
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -123,6 +129,14 @@ Route::prefix('admin')->middleware('admin.role')->group(function () {
     Route::get('/discounts/{discount}/edit', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'edit'])->name('admin.discounts.edit');
     Route::put('/discounts/{discount}', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'update'])->name('admin.discounts.update');
     Route::delete('/discounts/{discount}', [\App\Http\Controllers\Admin\DiscountAdminController::class, 'destroy'])->name('admin.discounts.destroy');
+
+    // News management
+    Route::get('/news', [\App\Http\Controllers\Admin\NewsAdminController::class, 'index'])->name('admin.news.index');
+    Route::get('/news/create', [\App\Http\Controllers\Admin\NewsAdminController::class, 'create'])->name('admin.news.create');
+    Route::post('/news', [\App\Http\Controllers\Admin\NewsAdminController::class, 'store'])->name('admin.news.store');
+    Route::get('/news/{news}/edit', [\App\Http\Controllers\Admin\NewsAdminController::class, 'edit'])->name('admin.news.edit');
+    Route::put('/news/{news}', [\App\Http\Controllers\Admin\NewsAdminController::class, 'update'])->name('admin.news.update');
+    Route::delete('/news/{news}', [\App\Http\Controllers\Admin\NewsAdminController::class, 'destroy'])->name('admin.news.destroy');
 
     // Categories CRUD
     Route::get('/categories', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'index'])->name('admin.categories.index');
