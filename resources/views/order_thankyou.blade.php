@@ -1,5 +1,11 @@
 ﻿@extends('layouts.header')
-@section('title', 'Đặt hàng thành công')
+
+@php
+    $orderStatusCode = \App\Models\Order::normalizeStatus($order->getRawOriginal('status') ?? $order->status);
+    $pageTitle = $orderStatusCode === 'completed' ? 'Cảm ơn quý khách!' : 'Đặt hàng thành công';
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
 
@@ -85,7 +91,7 @@ body {
             <div class="success-icon-box">
                 <i class="bi bi-check-lg"></i>
             </div>
-            <h2 class="fw-bold text-dark mb-2">Đặt hàng thành công!</h2>
+            <h2 class="fw-bold text-dark mb-2">{{ $pageTitle }}</h2>
             <p class="text-secondary mb-3">Cảm ơn bạn đã lựa chọn AquaShop.</p>
             <div class="order-pill">
                 Mã đơn: <span class="text-dark fw-bold">#{{ $order->id }}</span>

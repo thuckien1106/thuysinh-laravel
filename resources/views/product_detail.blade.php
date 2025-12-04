@@ -48,10 +48,16 @@ body { background-color: #f9f9f9; color: var(--text-main); }
     overflow: hidden;
     background: #fff;
     box-shadow: var(--shadow-soft);
+    aspect-ratio: 4 / 3;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .product-main-img {
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 .product-image-wrapper:hover .product-main-img { transform: scale(1.05); }
